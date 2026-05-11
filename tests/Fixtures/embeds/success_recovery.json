@@ -1,0 +1,27 @@
+{
+    "username": "✅ MyApp · production · info",
+    "embeds": [
+        {
+            "author": {
+                "name": "✅ MyApp · production · info"
+            },
+            "title": "✅ Operation recovered successfully",
+            "description": "The operation that had previously failed was recovered successfully after the second attempt.",
+            "color": 5763719,
+            "timestamp": "2026-05-11T11:30:00Z",
+            "fields": [
+                { "name": "Service", "value": "PaymentGateway", "inline": true },
+                { "name": "Transaction", "value": "TXN-99887766", "inline": true },
+                { "name": "Attempt", "value": "2 of 3", "inline": true }
+            ],
+            "footer": {
+                "text": "event:operation.recovered · severity:success · env:production · 11/05/2026 11:30"
+            }
+        }
+    ],
+    "allowed_mentions": {
+        "parse": [],
+        "users": [],
+        "roles": []
+    }
+}

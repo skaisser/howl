@@ -1,0 +1,16 @@
+/vendor
+/node_modules
+composer.lock
+.phpunit.result.cache
+.phpunit.cache/
+.DS_Store
+.idea
+.vscode
+
+# Local-only development artifacts — never push to public history
+.planning/
+.kaisser.yml
+BOOTSTRAP.md
+CLAUDE.md
+decisions.md
+session-handoff.md

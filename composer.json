@@ -1,0 +1,56 @@
+{
+    "name": "skaisser/howl",
+    "description": "Multi-driver Laravel notifier with Discord-first rich embeds, mentions, and bot-parseable metadata.",
+    "type": "library",
+    "keywords": ["laravel", "discord", "notifications", "webhook", "embeds", "observability", "events", "logging"],
+    "homepage": "https://github.com/skaisser/howl",
+    "support": {
+        "issues": "https://github.com/skaisser/howl/issues",
+        "source": "https://github.com/skaisser/howl"
+    },
+    "require": {
+        "php": "^8.3",
+        "illuminate/support": "^12.0|^13.0",
+        "illuminate/http": "^12.0|^13.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^10.0|^11.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "laravel/pint": "^1.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Shirleyson Kaisser",
+            "email": "skaisser@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Skaisser\\Howl\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Skaisser\\Howl\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Skaisser\\Howl\\HowlServiceProvider"
+            ],
+            "aliases": {
+                "Howl": "Skaisser\\Howl\\Facades\\Howl"
+            }
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}

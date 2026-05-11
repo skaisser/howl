@@ -1,0 +1,45 @@
+{
+    "title": "🔒 Audit: updated",
+    "description": "Actor admin@example.com performed updated on User:99.",
+    "severity": "audit",
+    "channel": "audit",
+    "fields": [
+        {
+            "name": "👤 Actor",
+            "value": "admin@example.com",
+            "inline": true
+        },
+        {
+            "name": "⚡ Action",
+            "value": "updated",
+            "inline": true
+        },
+        {
+            "name": "🎯 Target",
+            "value": "User:99",
+            "inline": true
+        },
+        {
+            "name": "👤 User",
+            "value": "[User](https://admin.example.com/users/99)",
+            "inline": true
+        }
+    ],
+    "codeBlocks": [
+        {
+            "name": "🔄 Diff",
+            "code": "{\n    \"before\": {\n        \"role\": \"viewer\"\n    },\n    \"after\": {\n        \"role\": \"editor\"\n    }\n}",
+            "lang": "json"
+        }
+    ],
+    "meta": {
+        "event": "audit",
+        "severity": "audit",
+        "env": "workbench",
+        "trace": "<trace>",
+        "timestamp": "<timestamp>",
+        "actor": "admin@example.com",
+        "action": "updated",
+        "target_class": "string"
+    }
+}

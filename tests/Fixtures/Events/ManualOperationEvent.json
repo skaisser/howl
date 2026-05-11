@@ -1,0 +1,39 @@
+{
+    "title": "ℹ️ Manual op: orders:reprocess-failed by admin@example.com",
+    "description": "Operator 'admin@example.com' triggered manual command 'orders:reprocess-failed'.",
+    "severity": "info",
+    "channel": "info",
+    "fields": [
+        {
+            "name": "👤 Operator",
+            "value": "admin@example.com",
+            "inline": true
+        },
+        {
+            "name": "⚡ Command",
+            "value": "orders:reprocess-failed",
+            "inline": true
+        },
+        {
+            "name": "⏱️ Duration",
+            "value": "14s",
+            "inline": true
+        }
+    ],
+    "codeBlocks": [
+        {
+            "name": "⚙️ Args",
+            "code": "{\n    \"--from\": \"2026-05-01\",\n    \"--limit\": 200\n}",
+            "lang": "json"
+        }
+    ],
+    "meta": {
+        "event": "manual_operation",
+        "severity": "info",
+        "env": "workbench",
+        "trace": "<trace>",
+        "timestamp": "<timestamp>",
+        "operator": "admin@example.com",
+        "command": "orders:reprocess-failed"
+    }
+}

@@ -1,0 +1,44 @@
+{
+    "title": "🚨 Job retry exhausted: SyncInventoryJob",
+    "description": "AMQP connection refused after 3 retries",
+    "severity": "error",
+    "channel": "errors",
+    "fields": [
+        {
+            "name": "🔧 Job",
+            "value": "SyncInventoryJob",
+            "inline": true
+        },
+        {
+            "name": "🔄 Attempts",
+            "value": "3",
+            "inline": true
+        },
+        {
+            "name": "📥 Queue",
+            "value": "default",
+            "inline": true
+        }
+    ],
+    "codeBlocks": [
+        {
+            "name": "📁 Source",
+            "code": "app/Jobs/SyncInventoryJob.php:87",
+            "lang": "php"
+        },
+        {
+            "name": "📦 Payload",
+            "code": "{\n    \"orderId\": 42,\n    \"sku\": \"WIDGET-RED\"\n}",
+            "lang": "json"
+        }
+    ],
+    "meta": {
+        "event": "job_retry_exhausted",
+        "severity": "error",
+        "env": "workbench",
+        "trace": "<trace>",
+        "timestamp": "<timestamp>",
+        "job_class": "App\\Jobs\\SyncInventoryJob",
+        "attempts": 3
+    }
+}

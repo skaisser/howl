@@ -1,0 +1,43 @@
+{
+    "title": "🚀 Deployed v1.4.2 to production",
+    "description": "Version v1.4.2 shipped on main.",
+    "severity": "deployment",
+    "channel": "deployments",
+    "fields": [
+        {
+            "name": "🚀 Version",
+            "value": "v1.4.2",
+            "inline": true
+        },
+        {
+            "name": "🌐 Env",
+            "value": "production",
+            "inline": true
+        },
+        {
+            "name": "🔗 Commit",
+            "value": "a3f8d2c",
+            "inline": true
+        },
+        {
+            "name": "🌿 Branch",
+            "value": "main",
+            "inline": true
+        },
+        {
+            "name": "⏱️ Duration",
+            "value": "1m 27s",
+            "inline": true
+        }
+    ],
+    "codeBlocks": [],
+    "meta": {
+        "event": "deployment",
+        "severity": "deployment",
+        "env": "production",
+        "trace": "<trace>",
+        "timestamp": "<timestamp>",
+        "version": "v1.4.2",
+        "commit_short": "a3f8d2c"
+    }
+}

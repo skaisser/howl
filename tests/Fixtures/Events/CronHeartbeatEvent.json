@@ -1,0 +1,38 @@
+{
+    "title": "⏱️ Cron: inventory:sync — ok",
+    "description": "Scheduled task 'inventory:sync' reported status: ok.",
+    "severity": "info",
+    "channel": "info",
+    "fields": [
+        {
+            "name": "📋 Schedule",
+            "value": "inventory:sync",
+            "inline": true
+        },
+        {
+            "name": "📊 Status",
+            "value": "ok",
+            "inline": true
+        },
+        {
+            "name": "🕐 Last Run",
+            "value": "<t:UNIX:R>",
+            "inline": true
+        },
+        {
+            "name": "⏱️ Duration",
+            "value": "23s",
+            "inline": true
+        }
+    ],
+    "codeBlocks": [],
+    "meta": {
+        "event": "cron_heartbeat",
+        "severity": "info",
+        "env": "workbench",
+        "trace": "<trace>",
+        "timestamp": "<timestamp>",
+        "schedule": "inventory:sync",
+        "status": "ok"
+    }
+}

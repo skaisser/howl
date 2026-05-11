@@ -1,0 +1,26 @@
+{
+    "title": "ℹ️ Background sync started",
+    "description": "Nightly inventory sync kicked off.",
+    "severity": "info",
+    "channel": null,
+    "fields": [
+        {
+            "name": "🔢 Records",
+            "value": "12,481",
+            "inline": true
+        },
+        {
+            "name": "🔗 Dashboard",
+            "value": "[Dashboard](https://admin.example.com/sync/42)",
+            "inline": true
+        }
+    ],
+    "codeBlocks": [],
+    "meta": {
+        "event": "generic_info",
+        "severity": "info",
+        "env": "workbench",
+        "trace": "<trace>",
+        "timestamp": "<timestamp>"
+    }
+}
