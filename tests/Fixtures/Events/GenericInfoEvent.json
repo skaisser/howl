@@ -2,7 +2,7 @@
     "title": "ℹ️ Background sync started",
     "description": "Nightly inventory sync kicked off.",
     "severity": "info",
-    "channel": null,
+    "channel": "info",
     "fields": [
         {
             "name": "🔢 Records",

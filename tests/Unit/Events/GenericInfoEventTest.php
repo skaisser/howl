@@ -100,10 +100,40 @@ it('fields() returns empty array when none provided', function () {
 // 4. channel / footerMeta / codeBlocks
 // ---------------------------------------------------------------------------
 
-it('channel() returns null', function () {
+it('channel() returns info for default severity info', function () {
     $event = new GenericInfoEvent('Title', 'Desc');
 
-    expect($event->channel())->toBeNull();
+    expect($event->channel())->toBe('info');
+});
+
+it('channel() returns errors when severity is error', function () {
+    $event = new GenericInfoEvent('Title', 'Desc', [], 'error');
+
+    expect($event->channel())->toBe('errors');
+});
+
+it('channel() returns warnings when severity is warning', function () {
+    $event = new GenericInfoEvent('Title', 'Desc', [], 'warning');
+
+    expect($event->channel())->toBe('warnings');
+});
+
+it('channel() returns info when severity is success', function () {
+    $event = new GenericInfoEvent('Title', 'Desc', [], 'success');
+
+    expect($event->channel())->toBe('info');
+});
+
+it('channel() returns audit when severity is audit', function () {
+    $event = new GenericInfoEvent('Title', 'Desc', [], 'audit');
+
+    expect($event->channel())->toBe('audit');
+});
+
+it('channel() returns deployments when severity is deployment', function () {
+    $event = new GenericInfoEvent('Title', 'Desc', [], 'deployment');
+
+    expect($event->channel())->toBe('deployments');
 });
 
 it('footerMeta() returns an empty array', function () {

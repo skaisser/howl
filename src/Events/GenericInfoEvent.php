@@ -76,6 +76,14 @@ class GenericInfoEvent extends HowlEvent
 
     public function channel(): ?string
     {
-        return null;
+        return match ($this->eventSeverity) {
+            'error' => 'errors',
+            'warning' => 'warnings',
+            'info' => 'info',
+            'success' => 'info',
+            'audit' => 'audit',
+            'deployment' => 'deployments',
+            default => 'info',
+        };
     }
 }
