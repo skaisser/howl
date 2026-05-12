@@ -95,7 +95,7 @@ it('HowlFake captures payloads even when app_env is in skip_environments', funct
     $fake = Howl::fake();
 
     // Even though env=testing is in skip_environments, HowlFake should capture
-    Howl::onDiscord()->info('Should be captured');
+    Howl::on()->info('Should be captured');
 
     expect($fake->sent())->toHaveCount(1);
 });
