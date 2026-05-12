@@ -565,5 +565,34 @@ This round mixes [S] release operations with [H] verification steps. Single team
 - [ ] `composer require skaisser/howl:^1.0` from a fresh worktree resolves to `1.0.0` within ~5 minutes of pushing the tag.
 - [ ] Pre-1.0 releases (`v0.1.0`, `v0.2.0`, `v0.2.1`) still present on Packagist and GitHub Releases — NOT deleted.
 - [ ] Final "v1.0.0 RELEASED" handoff note added to this plan stating completion.
-- [ ] `composer.json` `require`/`require-dev` UNCHANGED in this plan (no version bumps to dependencies).
-- [ ] No tests modified or removed in this plan; P-0007's 100% coverage gate stays green throughout.
+- [x] `composer.json` `require`/`require-dev` UNCHANGED in this plan (no version bumps to dependencies). ✅ 2026-05-12T04:12
+- [x] No tests modified or removed in this plan; P-0007's 100% coverage gate stays green throughout. ✅ 2026-05-12T04:12
+
+## Plan Check
+Audited 2026-05-12T04:12 — 34/49 tasks implemented (15 deferred as [user-action]), 0 mismatches, 0 deleted tasks restored, 0 orphaned refs fixed, AC 15/24 verified (9 deferred pending Cloudflare setup + v1.0.0 tag).
+
+### Acceptance Criteria Verification
+
+- [x] VitePress site builds locally (`npm run docs:build` exits 0) ✅ 2026-05-12T04:12 — build complete in ~4s, 56 pages rendered
+- [x] Versioned-docs structure: `docs/v1.0.0/` (21 pages frozen snapshot), `docs/next/` (21 pages pre-release), config.ts version dropdown ✅ 2026-05-12T04:12
+- [x] All 24+ docs pages exist and render in Laravel-docs-style sidebar order ✅ 2026-05-12T04:12
+- [x] Upgrade Guide structured with High/Medium/Low impact change classification ✅ 2026-05-12T04:12
+- [x] Release Notes mirrors Laravel-docs additive-feature catalog format ✅ 2026-05-12T04:12
+- [x] Cloudflare Pages deployment workflow committed as `.github/workflows/deploy-docs.yml` ✅ 2026-05-12T04:12 — [user-action] for actual CF project + DNS setup
+- [ ] [user-action] `https://howl.skaisser.dev` serves docs (HTTP 200) — requires CF Pages project creation
+- [ ] [user-action] `https://howl.skaisser.dev/llms.txt` and `llms-full.txt` served — requires CF Pages
+- [x] Root-level `llms.txt` (35 lines) and `llms-full.txt` (7698 lines) exist ✅ 2026-05-12T04:12
+- [x] `README.md` rewritten as tight 96-line quick-start linking to howl.skaisser.dev ✅ 2026-05-12T04:12
+- [x] `CHANGELOG.md` has `[1.0.0]` entry above `[0.2.1]` ✅ 2026-05-12T04:12
+- [x] `/docs/v1.0.0/upgrade.md` and `/docs/next/upgrade.md` exist with sed codemod + High/Medium/Low impact ✅ 2026-05-12T04:12
+- [x] `/docs/v1.0.0/releases.md` and `/docs/next/releases.md` exist as additive-feature catalogs ✅ 2026-05-12T04:12
+- [x] GitHub repo description, topics, homepage updated via `gh repo edit` ✅ 2026-05-12T04:12
+- [ ] [user-action] Social preview banner (1280×640 PNG) — no gh API for this; upload manually via GitHub Settings
+- [x] `composer.json` `homepage` updated to `https://howl.skaisser.dev` ✅ 2026-05-12T04:12
+- [ ] [user-action] Paylog P-0222 cross-reference — separate repo, out of scope for this PR
+- [ ] [user-action] `v1.0.0` git tag — user handles after homolog→main promotion via /promote
+- [ ] [user-action] GitHub Release at `v1.0.0` — after tag is pushed
+- [ ] [user-action] `composer require skaisser/howl:^1.0` smoke install — after Packagist picks up tag
+- [x] Pre-1.0 releases stay on Packagist — not touched ✅ 2026-05-12T04:12
+- [x] `composer.json` `require`/`require-dev` UNCHANGED ✅ 2026-05-12T04:12
+- [x] No tests modified; P-0007 100% coverage gate intact ✅ 2026-05-12T04:12
