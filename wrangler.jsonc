@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "howl-docs",
+  "compatibility_date": "2026-05-01",
+  "assets": {
+    "directory": "./docs/.vitepress/dist",
+    "not_found_handling": "404-page"
+  },
+  "observability": {
+    "enabled": true
+  }
+}
