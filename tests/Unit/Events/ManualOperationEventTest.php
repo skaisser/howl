@@ -32,7 +32,7 @@ it('channel() returns info', function () {
 it('title() includes command and operator', function () {
     $event = new ManualOperationEvent('john', 'orders:reprocess');
 
-    expect($event->title())->toBe('ℹ️ Manual op: orders:reprocess by john');
+    expect($event->title())->toBe('Manual op: orders:reprocess by john');
 });
 
 // ---------------------------------------------------------------------------

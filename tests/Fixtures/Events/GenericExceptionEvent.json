@@ -1,5 +1,5 @@
 {
-    "title": "🚨 Exception: RuntimeException",
+    "title": "Exception: RuntimeException",
     "description": "Connection timed out after 30s",
     "severity": "error",
     "channel": "errors",

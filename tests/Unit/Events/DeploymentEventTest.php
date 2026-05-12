@@ -61,11 +61,11 @@ it('v0.2.0 named-arg constructor works correctly', function () {
 // 4. title
 // ---------------------------------------------------------------------------
 
-it('title() includes version and env', function () {
+it('title() includes version and env (no severity emoji — EmbedBuilder prepends)', function () {
     $event = new DeploymentEvent('v2.0.0', 'production', 'deadbeef');
 
     expect($event->title())
-        ->toContain('🚀')
+        ->not->toContain('🚀')   // emoji prefix is added by EmbedBuilder, not here
         ->toContain('v2.0.0')
         ->toContain('production');
 });

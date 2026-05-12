@@ -1,5 +1,5 @@
 {
-    "title": "⏱️ Cron: inventory:sync — ok",
+    "title": "Cron: inventory:sync — ok",
     "description": "Scheduled task 'inventory:sync' reported status: ok.",
     "severity": "info",
     "channel": "info",

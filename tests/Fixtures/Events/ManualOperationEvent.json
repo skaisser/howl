@@ -1,5 +1,5 @@
 {
-    "title": "ℹ️ Manual op: orders:reprocess-failed by admin@example.com",
+    "title": "Manual op: orders:reprocess-failed by admin@example.com",
     "description": "Operator 'admin@example.com' triggered manual command 'orders:reprocess-failed'.",
     "severity": "info",
     "channel": "info",

@@ -42,7 +42,7 @@ class JobRetryExhaustedEvent extends HowlEvent
 
     public function title(): string
     {
-        return '🚨 Job retry exhausted: '.class_basename($this->jobClass);
+        return 'Job retry exhausted: '.class_basename($this->jobClass);
     }
 
     public function description(): string

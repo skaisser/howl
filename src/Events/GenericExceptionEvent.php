@@ -39,7 +39,7 @@ class GenericExceptionEvent extends HowlEvent
 
     public function title(): string
     {
-        return $this->customTitle ?? '🚨 Exception: '.class_basename($this->exception);
+        return $this->customTitle ?? 'Exception: '.class_basename($this->exception);
     }
 
     public function description(): string

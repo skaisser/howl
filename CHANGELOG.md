@@ -5,6 +5,25 @@ All notable changes to `skaisser/howl` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1] — 2026-05-12
+
+### Fixed
+
+- **Doubled severity emoji in built-in template embed titles.** `GenericExceptionEvent`, `DeploymentEvent`, `AuditEvent`, `CronHeartbeatEvent`, `JobRetryExhaustedEvent`, and `ManualOperationEvent` previously baked their severity emoji into `title()`, which `EmbedBuilder` then re-prepended — producing titles like `🚨 🚨 Exception: …`. The `title()` methods now return plain text; `EmbedBuilder` remains the single source of truth for the emoji prefix. `GenericInfoEvent` was unaffected.
+
+### Documentation
+
+- README corrected: six API/config contradictions fixed (Slack default channel env var name, `PendingNotification` chain example, `DeploymentEvent` constructor arg list, `AuditEvent` actor type, non-existent `HowlFake::assertSentCount`, CI scope wording).
+
+### Tests
+
+- New regression test `tests/Unit/NoEmojiDoublingTest.php` exercises all 7 built-in templates through `EmbedBuilder` and locks the invariant: the severity emoji appears exactly once in the rendered title, and `title()` must not start with a severity emoji.
+- Test count: 480 → 487 (+7 from regression), assertions: 986 → 1001.
+
+### Compatibility
+
+Non-breaking. Consumer code calling `$event->title()` directly will now receive plain strings instead of emoji-prefixed ones — technically a behavioural change but aligned with the documented `Title:` contract in the built-in events docs.
+
 ## [1.0.0] — 2026-05-12
 
 First stable public release. Multi-driver, queue-aware, with a full docs site at https://howl.skaisser.dev.

@@ -27,7 +27,7 @@ it('buildPayload uses event title when builder title is empty', function () {
     $ref->setAccessible(true);
     $payload = $ref->invoke($pending, 'info');
 
-    expect($payload->title)->toContain('⏱️')
+    expect($payload->title)->not->toContain('⏱️')   // emoji added by EmbedBuilder
         ->and($payload->title)->toContain('daily-report');
 });
 
@@ -117,7 +117,8 @@ it('error() terminal method accepts a HowlEvent and dispatches', function () {
     $ref->setAccessible(true);
     $payload = $ref->invoke($clone, 'deployment');
 
-    expect($payload->title)->toContain('🚀')
+    expect($payload->title)->not->toContain('🚀')   // emoji added by EmbedBuilder
+        ->and($payload->title)->toContain('Deployed')
         ->and($payload->severity)->toBe('deployment');
 });
 

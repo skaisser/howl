@@ -47,7 +47,7 @@ class DeploymentEvent extends HowlEvent
 
     public function title(): string
     {
-        return "🚀 Deployed {$this->version} to {$this->env}";
+        return "Deployed {$this->version} to {$this->env}";
     }
 
     public function description(): string

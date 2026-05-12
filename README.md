@@ -14,7 +14,7 @@
 
 <p>
   <a href="https://github.com/skaisser/howl/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/skaisser/howl/test.yml?style=for-the-badge&label=Tests&logo=github" alt="Tests"></a>
-  <img src="https://img.shields.io/badge/Tests-480%20passing-success?style=for-the-badge&logo=pestphp" alt="480 Tests Passing">
+  <img src="https://img.shields.io/badge/Tests-487%20passing-success?style=for-the-badge&logo=pestphp" alt="487 Tests Passing">
   <img src="https://img.shields.io/badge/Coverage-100%25-brightgreen?style=for-the-badge&logo=codecov" alt="100% Coverage">
 </p>
 
@@ -46,7 +46,7 @@ A single driver-agnostic API for Discord, Slack, and Telegram. Drop it into any 
 - 📦 **Seven built-in event templates** — exceptions, deployments, audits, cron heartbeats, job failures, manual ops, generic info
 - 🧪 **HowlFake test helper** — assert notifications without real HTTP calls; per-driver assertions
 - ⚡ **Queue-aware** with exponential backoff and opt-in Redis rate limiting
-- ✅ **100% line coverage** across 480 tests, validated on every commit
+- ✅ **100% line coverage** across 487 tests, enforced by `pest --coverage --min=100`
 - 📚 **Versioned docs** at `howl.skaisser.dev` plus machine-readable `llms.txt` for AI agents
 
 ---
@@ -60,7 +60,7 @@ A single driver-agnostic API for Discord, Slack, and Telegram. Drop it into any 
 | 8.4 | 12.x | 3.x | 11.x | 10.x | ✅ |
 | 8.4 | 13.x | 4.x | 12.x | 11.x | ✅ |
 
-Composer constraints support all four combinations. CI validates the latest combo (PHP 8.4 × Laravel 13) on every commit; the other rows are validated locally before each release.
+Composer constraints support all four combinations. CI validates the latest combo (PHP 8.4 × Laravel 13) on every push and PR targeting `main`; the other rows are validated locally before each release.
 
 ---
 
@@ -82,7 +82,7 @@ HOWL_DISCORD_DEFAULT=https://discord.com/api/webhooks/...
 
 # Slack (optional — only if you use the slack driver)
 HOWL_SLACK_BOT_TOKEN=xoxb-...
-HOWL_SLACK_CHANNEL_ID=C0XXXXXXX
+HOWL_SLACK_DEFAULT_CHANNEL=C0XXXXXXX
 
 # Telegram (optional — only if you use the telegram driver)
 HOWL_TELEGRAM_BOT_TOKEN=123456:ABC-DEF...
@@ -110,7 +110,7 @@ Howl::driver('slack')->info('Deploy succeeded');
 Howl::driver('telegram')->error('Database connection lost');
 
 // Chainable: pick driver + channel + severity in one go
-Howl::driver('slack')->on('deployments')->success('v1.2.0 shipped');
+Howl::driver('slack')->channel('deployments')->success('v1.2.0 shipped');
 ```
 
 ### 📨 Built-in event templates
@@ -127,8 +127,8 @@ use Skaisser\Howl\Events\{
 };
 
 Howl::error(new GenericExceptionEvent($e));
-Howl::deployment(new DeploymentEvent(version: 'v1.2.0', env: 'production'));
-Howl::audit(new AuditEvent(actor: $user, action: 'role.changed', target: $role));
+Howl::deployment(new DeploymentEvent(version: 'v1.2.0', env: 'production', commit: 'abc1234'));
+Howl::audit(new AuditEvent(actor: $user->email, action: 'role.changed', target: $role));
 ```
 
 ---
@@ -163,8 +163,8 @@ Howl::driver('slack')->info('Deploy started');
 
 // Global assertions
 $fake->assertSent(fn ($p) => $p->severity === 'error');
-$fake->assertSentCount(2);
-$fake->assertNothingSent(); // negation form available
+$fake->assertNothingSent(); // negation form
+expect($fake->sent())->toHaveCount(2); // count via the sent() accessor
 
 // Per-driver assertions (v1.0+)
 $fake->assertSentVia('discord', fn ($p) => $p->severity === 'error');

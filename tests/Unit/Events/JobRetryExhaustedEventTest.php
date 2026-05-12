@@ -52,7 +52,7 @@ it('title() uses class_basename of the job class', function () {
         lastException: new RuntimeException('boom'),
     );
 
-    expect($event->title())->toBe('🚨 Job retry exhausted: ProcessPayment');
+    expect($event->title())->toBe('Job retry exhausted: ProcessPayment');
 });
 
 it('title() works with a bare class name (no namespace)', function () {
@@ -63,7 +63,7 @@ it('title() works with a bare class name (no namespace)', function () {
         lastException: new RuntimeException('boom'),
     );
 
-    expect($event->title())->toBe('🚨 Job retry exhausted: SendEmail');
+    expect($event->title())->toBe('Job retry exhausted: SendEmail');
 });
 
 // ---------------------------------------------------------------------------
