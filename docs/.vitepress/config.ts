@@ -28,6 +28,14 @@ export default defineConfig({
     ['meta', { name: 'twitter:title', content: 'Howl — Multi-driver Laravel Notifier' }],
     ['meta', { name: 'twitter:description', content: 'Discord, Slack, Telegram with rich embeds, channel failover, and queue-aware dispatch.' }],
     ['meta', { name: 'twitter:image', content: 'https://howl.skaisser.dev/hero-howl.png' }],
+    // Custom CSS — bump nav logo so the wolf head is actually visible
+    ['style', {}, `
+      .VPNavBarTitle .title { gap: 10px; }
+      .VPNavBarTitle .logo { height: 40px !important; max-width: 140px; }
+      @media (max-width: 768px) {
+        .VPNavBarTitle .logo { height: 32px !important; max-width: 110px; }
+      }
+    `],
   ],
 
   themeConfig: {
