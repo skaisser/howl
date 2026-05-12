@@ -8,9 +8,12 @@ composer.lock
 .vscode
 
 # Local-only development artifacts — never push to public history
-.planning/
 .kaisser.yml
 BOOTSTRAP.md
 CLAUDE.md
 decisions.md
 session-handoff.md
+
+# Planning artifacts — tracked on homolog branch for cross-session continuity.
+# Stripped from main in the homolog→main release commit before tagging public versions.
+# (Not gitignored so plans persist across Claude sessions and contributors.)
