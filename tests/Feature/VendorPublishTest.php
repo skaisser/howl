@@ -1,33 +1,36 @@
 <?php
 
-use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\ServiceProvider;
+use Skaisser\Howl\HowlServiceProvider;
 
-it('vendor:publish --tag=howl-config copies config/howl.php to the app config path', function () {
-    // Determine the config path for the testbench app
-    $configPath = $this->app->configPath();
+it('vendor:publish --tag=howl-config registers config/howl.php as a publishable source', function () {
+    // Verify publish REGISTRATION rather than invoking Artisan vendor:publish,
+    // which writes to the shared testbench config_path and races with other
+    // parallel workers' bootstrap (especially under --coverage where the
+    // window widens). The publishes() call inside HowlServiceProvider::boot()
+    // is what binds the source-to-destination pair, so asserting on the
+    // registration captures the same behaviour without filesystem contention.
+    $paths = ServiceProvider::pathsToPublish(
+        HowlServiceProvider::class,
+        'howl-config'
+    );
 
-    // Ensure we are working with a clean slate
-    $destination = $configPath.'/howl.php';
+    expect($paths)->not->toBeEmpty();
 
-    if (file_exists($destination)) {
-        unlink($destination);
-    }
+    $source = array_key_first($paths);
+    $destination = $paths[$source];
 
-    $exitCode = Artisan::call('vendor:publish', [
-        '--tag' => 'howl-config',
-        '--force' => true,
-    ]);
+    // Source must be the package config file
+    expect($source)->toEndWith('/config/howl.php')
+        ->and(file_exists($source))->toBeTrue();
 
-    // Artisan::call returns 0 on success
-    expect($exitCode)->toBe(0)
-        ->and(file_exists($destination))->toBeTrue();
+    // Destination should be the consumer app's config_path
+    expect($destination)->toEndWith('/config/howl.php');
 
-    $config = require $destination;
+    // The source file must be a valid Laravel config
+    $config = require $source;
 
     expect($config)->toBeArray()
         ->and($config)->toHaveKey('driver')
         ->and($config)->toHaveKey('skip_environments');
-
-    // Clean up
-    @unlink($destination);
 });

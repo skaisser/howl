@@ -6,9 +6,9 @@ return [
     |-------------------------------------------------------------------------
     | Default driver
     |-------------------------------------------------------------------------
-    | Which driver receives Howl::onDiscord()->error(...) by default.
+    | Which driver Howl::error(...) / Howl::on()->error(...) uses by default.
     | In v1 only `discord` is implemented. `telegram` / `slack` are
-    | reserved for future versions.
+    | reserved for P-0006.
     */
     'driver' => env('HOWL_DRIVER', 'discord'),
 
@@ -23,6 +23,42 @@ return [
 
     /*
     |-------------------------------------------------------------------------
+    | Default channel
+    |-------------------------------------------------------------------------
+    | The channel (Discord thread / category name) used when no channel is
+    | set per-call via Howl::on($channel) or via HowlEvent::channel().
+    | Channel precedence: per-call > HowlEvent::channel() > this config key.
+    */
+    'channel' => env('HOWL_DEFAULT_CHANNEL', 'errors'),
+
+    /*
+    |-------------------------------------------------------------------------
+    | Backup channel
+    |-------------------------------------------------------------------------
+    | Optional second channel used for failover or fan-out. Set to null to
+    | disable backup-channel behaviour (single-channel dispatch only).
+    */
+    'channel_backup' => env('HOWL_BACKUP_CHANNEL', null),
+
+    /*
+    |-------------------------------------------------------------------------
+    | Channel mode
+    |-------------------------------------------------------------------------
+    | Controls how the primary + backup channels are used when channel_backup
+    | is non-null:
+    |
+    |   'failover' (default) — try primary; on failure, try backup once.
+    |                          Returns true on first success, false if both fail.
+    |
+    |   'fan_out'            — dispatch to BOTH channels sequentially.
+    |                          Returns true iff at least one channel succeeds.
+    |                          Note: fan_out doubles your rate-limit consumption —
+    |                          size your RateLimiter::for() quota accordingly.
+    */
+    'channel_mode' => env('HOWL_CHANNEL_MODE', 'failover'),
+
+    /*
+    |-------------------------------------------------------------------------
     | Queue mode
     |-------------------------------------------------------------------------
     | When true, sends are dispatched as ShouldQueue jobs with 3 retries
@@ -32,6 +68,21 @@ return [
     'queue' => env('HOWL_QUEUE', false),
     'queue_connection' => env('HOWL_QUEUE_CONNECTION', null),
     'queue_name' => env('HOWL_QUEUE_NAME', 'default'),
+
+    /*
+    |-------------------------------------------------------------------------
+    | Queue rate-limiter (opt-in)
+    |-------------------------------------------------------------------------
+    | When non-null, SendHowlJob::middleware() wraps each job with
+    | RateLimitedWithRedis using this key. Register the limiter in your
+    | AppServiceProvider::boot():
+    |
+    |   RateLimiter::for('howl-discord', fn () => Limit::perMinute(28));
+    |
+    | When null (default), no rate-limiting is applied.
+    | Requires Redis at runtime (not needed for unit tests).
+    */
+    'rate_limiter_key' => env('HOWL_RATE_LIMITER_KEY', null),
 
     /*
     |-------------------------------------------------------------------------
@@ -83,14 +134,57 @@ return [
             'avatar_url' => env('HOWL_DISCORD_AVATAR_URL'),
         ],
 
-        // Future drivers (v2+) — reserved scaffolding
         'telegram' => [
+            // Telegram bot token from @BotFather (format: '123456:ABC-DEF...').
             'bot_token' => env('HOWL_TELEGRAM_BOT_TOKEN'),
+
+            // Telegram supergroup chat_id (e.g. '-1001234567890').
+            //
+            // REQUIRED SETUP for thread routing:
+            //   1. Create a supergroup (NOT a regular group — must convert to supergroup).
+            //   2. Enable Forum mode: Group settings → Topics → toggle "Topics" on.
+            //   3. Add your bot to the supergroup with at least Read access.
+            //   4. Create one topic per Howl channel (errors, audits, etc.).
+            //   5. Get each topic's numeric ID via the Telegram Bot API getUpdates,
+            //      or by right-clicking the topic → Copy Link → the trailing number is the topic ID.
+            //
+            // If you don't need thread routing, leave `threads` empty and messages
+            // land in the supergroup's General topic.
             'chat_id' => env('HOWL_TELEGRAM_CHAT_ID'),
+
+            // Map Howl channel name → Telegram forum topic ID (integer).
+            // Empty map = no thread routing = all messages land in General.
+            'threads' => [
+                'errors'      => env('HOWL_TELEGRAM_THREAD_ERRORS'),
+                'warnings'    => env('HOWL_TELEGRAM_THREAD_WARNINGS'),
+                'info'        => env('HOWL_TELEGRAM_THREAD_INFO'),
+                'audit'       => env('HOWL_TELEGRAM_THREAD_AUDIT'),
+                'deployments' => env('HOWL_TELEGRAM_THREAD_DEPLOYMENTS'),
+            ],
+
+            'timeout' => env('HOWL_TELEGRAM_TIMEOUT', 10),
         ],
 
         'slack' => [
-            'webhook_url' => env('HOWL_SLACK_WEBHOOK_URL'),
+            // Slack App OAuth bot token. Requires `chat:write` scope minimum;
+            // `files:write` scope additionally needed for ->attach() support.
+            // Create at https://api.slack.com/apps → OAuth & Permissions → Install to Workspace.
+            'bot_token' => env('HOWL_SLACK_BOT_TOKEN'),
+
+            // Default Slack channel ID (e.g. 'C0123ABC') when no per-Howl-channel mapping matches.
+            // Get channel IDs by right-clicking the channel in Slack → Copy → Copy link (ID is the last segment).
+            'default_channel' => env('HOWL_SLACK_DEFAULT_CHANNEL'),
+
+            // Map Howl channel name → Slack channel ID for routing.
+            'channels' => [
+                'errors'      => env('HOWL_SLACK_CHANNEL_ERRORS'),
+                'warnings'    => env('HOWL_SLACK_CHANNEL_WARNINGS'),
+                'info'        => env('HOWL_SLACK_CHANNEL_INFO'),
+                'audit'       => env('HOWL_SLACK_CHANNEL_AUDIT'),
+                'deployments' => env('HOWL_SLACK_CHANNEL_DEPLOYMENTS'),
+            ],
+
+            'timeout' => env('HOWL_SLACK_TIMEOUT', 10),
         ],
     ],
 

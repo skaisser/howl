@@ -3,7 +3,7 @@
     "description": "Multi-driver Laravel notifier with Discord-first rich embeds, mentions, and bot-parseable metadata.",
     "type": "library",
     "keywords": ["laravel", "discord", "notifications", "webhook", "embeds", "observability", "events", "logging"],
-    "homepage": "https://github.com/skaisser/howl",
+    "homepage": "https://howl.skaisser.dev",
     "support": {
         "issues": "https://github.com/skaisser/howl/issues",
         "source": "https://github.com/skaisser/howl"
@@ -15,8 +15,9 @@
     },
     "require-dev": {
         "orchestra/testbench": "^10.0|^11.0",
-        "pestphp/pest": "^3.0",
-        "pestphp/pest-plugin-laravel": "^3.0",
+        "pestphp/pest": "^3.0|^4.0",
+        "pestphp/pest-plugin-laravel": "^3.0|^4.0",
+        "phpunit/phpunit": "^11.5|^12.5",
         "laravel/pint": "^1.0"
     },
     "license": "MIT",

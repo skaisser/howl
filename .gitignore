@@ -8,9 +8,23 @@ composer.lock
 .vscode
 
 # Local-only development artifacts — never push to public history
-.planning/
 .kaisser.yml
 BOOTSTRAP.md
 CLAUDE.md
 decisions.md
 session-handoff.md
+
+# Planning + tooling artifacts — internal workflow, never committed.
+.planning/
+.githooks/
+.kaisser/
+.batch-*.json
+.auto-merge-lock
+.auto-pr-lock
+
+# VitePress build output and cache — never commit
+docs/.vitepress/dist/
+docs/.vitepress/cache/
+
+# Node modules — never commit
+node_modules/

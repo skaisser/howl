@@ -23,7 +23,7 @@ use Skaisser\Howl\Facades\Howl;
 it('throws LogicException when terminal verb conflicts with event severity', function () {
     Howl::fake();
 
-    expect(fn () => Howl::onDiscord()->error(new GenericInfoEvent('Test', 'Info msg')))
+    expect(fn () => Howl::on()->error(new GenericInfoEvent('Test', 'Info msg')))
         ->toThrow(
             LogicException::class,
             "Howl: terminal verb ->error() conflicts with event severity 'info'."
@@ -35,7 +35,7 @@ it('does not throw when explicit ->severity() override matches the terminal verb
     Howl::fake();
 
     // ->severity('error') signals intent to override — no guard triggered.
-    expect(fn () => Howl::onDiscord()->severity('error')->error(new GenericInfoEvent('Test', 'Info msg')))
+    expect(fn () => Howl::on()->severity('error')->error(new GenericInfoEvent('Test', 'Info msg')))
         ->not->toThrow(LogicException::class);
 });
 
@@ -43,7 +43,7 @@ it('does not throw when explicit ->severity() override matches the terminal verb
 it('does not throw when dispatching via ->send($event) (defers to event severity)', function () {
     Howl::fake();
 
-    expect(fn () => Howl::onDiscord()->send(new GenericInfoEvent('Test', 'Info msg')))
+    expect(fn () => Howl::on()->send(new GenericInfoEvent('Test', 'Info msg')))
         ->not->toThrow(LogicException::class);
 });
 
@@ -52,6 +52,6 @@ it('does not throw when event severity matches the terminal verb', function () {
     Howl::fake();
 
     // GenericInfoEvent with default severity 'info' → ->info() verb matches → no conflict.
-    expect(fn () => Howl::onDiscord()->info(new GenericInfoEvent('Test', 'Info msg')))
+    expect(fn () => Howl::on()->info(new GenericInfoEvent('Test', 'Info msg')))
         ->not->toThrow(LogicException::class);
 });
