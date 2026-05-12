@@ -14,9 +14,13 @@ CLAUDE.md
 decisions.md
 session-handoff.md
 
-# Planning artifacts — tracked on homolog branch for cross-session continuity.
-# Stripped from main in the homolog→main release commit before tagging public versions.
-# (Not gitignored so plans persist across Claude sessions and contributors.)
+# Planning + tooling artifacts — internal workflow, never committed.
+.planning/
+.githooks/
+.kaisser/
+.batch-*.json
+.auto-merge-lock
+.auto-pr-lock
 
 # VitePress build output and cache — never commit
 docs/.vitepress/dist/
