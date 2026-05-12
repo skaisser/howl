@@ -1,16 +1,33 @@
 ---
-id: "P-0008"
-title: "docs: VitePress docs site + llms.txt + README/CHANGELOG/migration → tag v1.0.0"
-type: docs
-project: howl
-branch: docs/vitepress-site-and-v1-release
-base: homolog
-tags: [docs, vitepress, cloudflare-pages, llms-txt, changelog, migration, release, v1-0-0, path-to-v1]
 backlog: null
-dependsOn: ["P-0005", "P-0006", "P-0007"]
+base: homolog
+branch: docs/vitepress-site-and-v1-release
 created: 2026-05-12T01:21
+dependsOn:
+    - P-0005
+    - P-0006
+    - P-0007
+id: P-0008
+phases_done: 4
+phases_total: 9
+pr: 5
+project: howl
+session: ca1c12c4-eca2-423c-a1da-0ec265f7a0c4
 session_id: null
-session: "ca1c12c4-eca2-423c-a1da-0ec265f7a0c4"
+tags:
+    - docs
+    - vitepress
+    - cloudflare-pages
+    - llms-txt
+    - changelog
+    - migration
+    - release
+    - v1-0-0
+    - path-to-v1
+tasks_done: 34
+tasks_total: 50
+title: 'docs: VitePress docs site + llms.txt + README/CHANGELOG/migration → tag v1.0.0'
+type: docs
 ---
 
 # docs: VitePress documentation site + llms.txt + README/CHANGELOG/migration → tag v1.0.0
