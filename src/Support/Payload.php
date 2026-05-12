@@ -32,5 +32,6 @@ final readonly class Payload
         public ?DateTimeInterface $timestamp,
         public bool $forceSync,
         public ?string $fallback = null,
+        public ?string $driver = null,
     ) {}
 }

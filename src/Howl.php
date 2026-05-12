@@ -2,11 +2,11 @@
 
 namespace Skaisser\Howl;
 
-use BadMethodCallException;
 use Illuminate\Support\Facades\Log;
 use Skaisser\Howl\Contracts\Driver;
 use Skaisser\Howl\Drivers\DiscordDriver;
 use Skaisser\Howl\Drivers\NullDriver;
+use Skaisser\Howl\Events\HowlEvent;
 use Skaisser\Howl\Jobs\SendHowlJob;
 use Skaisser\Howl\Support\Payload;
 use Skaisser\Howl\Support\PendingNotification;
@@ -24,10 +24,15 @@ class Howl
         $this->driver = $this->resolveDriver($config['driver'] ?? 'discord');
     }
 
+    // -----------------------------------------------------------------------
+    // Driver-agnostic entry points (Phase 1)
+    // -----------------------------------------------------------------------
+
     /**
-     * Begin building a notification for the Discord driver.
+     * Begin building a driver-agnostic notification with an optional channel override.
+     * Precedence: per-call ($channel) > HowlEvent::channel() > config('howl.channel').
      */
-    public function onDiscord(?string $channel = null): PendingNotification
+    public function on(?string $channel = null): PendingNotification
     {
         $notification = new PendingNotification;
 
@@ -39,23 +44,68 @@ class Howl
     }
 
     /**
-     * Reserved for v2 — Slack driver not yet implemented.
-     *
-     * @throws BadMethodCallException
+     * Select the driver for this notification via a fluent pre-chain builder.
+     * Returns a PendingNotification with the driver override pre-set.
      */
-    public function onSlack(?string $channel = null): PendingNotification
+    public function driver(string $name): PendingNotification
     {
-        throw new BadMethodCallException('onSlack() is reserved for v2. Only onDiscord() is available in v1.');
+        return (new PendingNotification)->driver($name);
     }
 
     /**
-     * Reserved for v2 — Telegram driver not yet implemented.
-     *
-     * @throws BadMethodCallException
+     * Dispatch an 'error' severity notification.
      */
-    public function onTelegram(?string $channel = null): PendingNotification
+    public function error(HowlEvent|string $titleOrEvent = ''): bool
     {
-        throw new BadMethodCallException('onTelegram() is reserved for v2. Only onDiscord() is available in v1.');
+        return $this->dispatchSeverity('error', $titleOrEvent);
+    }
+
+    /**
+     * Dispatch a 'warning' severity notification.
+     */
+    public function warning(HowlEvent|string $titleOrEvent = ''): bool
+    {
+        return $this->dispatchSeverity('warning', $titleOrEvent);
+    }
+
+    /**
+     * Dispatch an 'info' severity notification.
+     */
+    public function info(HowlEvent|string $titleOrEvent = ''): bool
+    {
+        return $this->dispatchSeverity('info', $titleOrEvent);
+    }
+
+    /**
+     * Dispatch an 'audit' severity notification.
+     */
+    public function audit(HowlEvent|string $titleOrEvent = ''): bool
+    {
+        return $this->dispatchSeverity('audit', $titleOrEvent);
+    }
+
+    /**
+     * Dispatch a 'deployment' severity notification.
+     */
+    public function deployment(HowlEvent|string $titleOrEvent = ''): bool
+    {
+        return $this->dispatchSeverity('deployment', $titleOrEvent);
+    }
+
+    /**
+     * Dispatch a 'success' severity notification.
+     */
+    public function success(HowlEvent|string $titleOrEvent = ''): bool
+    {
+        return $this->dispatchSeverity('success', $titleOrEvent);
+    }
+
+    /**
+     * Shared severity dispatcher — the six severity entry methods delegate here.
+     */
+    private function dispatchSeverity(string $severity, HowlEvent|string $titleOrEvent): bool
+    {
+        return (new PendingNotification)->{$severity}($titleOrEvent);
     }
 
     /**
@@ -63,7 +113,8 @@ class Howl
      *
      * - Short-circuits when the current environment is in skip_environments.
      * - When queue mode is on and forceSync is false, dispatches a SendHowlJob.
-     * - Otherwise sends synchronously, walking the fallback chain on failure.
+     * - Otherwise sends synchronously, applying channel failover/fan-out semantics,
+     *   then walking the driver-level fallback chain on per-channel failure.
      * - Never propagates exceptions; logs each failure and returns false silently.
      */
     public function dispatch(Payload $payload): bool
@@ -75,7 +126,8 @@ class Howl
             return true;
         }
 
-        $primary = $this->config['driver'] ?? 'discord';
+        // Resolve the effective primary driver (per-call override beats config)
+        $primary = $payload->driver ?? $this->config['driver'] ?? 'discord';
 
         // Queue branch — dispatch async unless forceSync is set
         if (($this->config['queue'] ?? false) && ! $payload->forceSync) {
@@ -86,34 +138,40 @@ class Howl
             return true;
         }
 
-        // Sync path — walk the fallback chain, swallowing all exceptions
-        // Per-call fallback (from Payload) takes priority over config fallback.
-        $fallback = $payload->fallback ?? $this->config['fallback'] ?? null;
+        // Resolve channel routing configuration
+        // Channel precedence: per-call payload->channel > config('howl.channel')
+        $primaryChannel = $payload->channel ?? $this->config['channel'] ?? null;
+        $backupChannel = $this->config['channel_backup'] ?? null;
+        $mode = $this->config['channel_mode'] ?? 'failover';
 
-        // array_unique ensures we never call the same driver name twice
-        $chain = array_values(array_unique(array_filter([$primary, $fallback])));
+        // Build a channel-pinned payload for the primary channel
+        $primaryPayload = $primaryChannel !== null
+            ? $this->clonePayloadWithChannel($payload, $primaryChannel)
+            : $payload;
 
-        foreach ($chain as $name) {
-            try {
-                $driver = $this->resolveDriver($name);
+        if ($mode === 'fan_out') {
+            // Fan-out: dispatch to both channels; true iff at least one succeeds
+            $primaryResult = $this->dispatchToDriverOnChannel($primaryPayload, $primary);
 
-                if ($driver->send($payload)) {
-                    return true;
-                }
+            if ($backupChannel !== null) {
+                $backupPayload = $this->clonePayloadWithChannel($payload, $backupChannel);
+                $backupResult = $this->dispatchToDriverOnChannel($backupPayload, $primary);
 
-                Log::error("Howl driver [{$name}] returned false", [
-                    'driver' => $name,
-                    'title' => $payload->title,
-                    'severity' => $payload->severity,
-                ]);
-            } catch (\Throwable $e) {
-                Log::error("Howl driver [{$name}] threw: {$e->getMessage()}", [
-                    'driver' => $name,
-                    'exception' => $e->getMessage(),
-                    'title' => $payload->title,
-                    'severity' => $payload->severity,
-                ]);
+                return $primaryResult || $backupResult;
             }
+
+            return $primaryResult;
+        }
+
+        // Failover (default): try primary; on failure, try backup once
+        if ($this->dispatchToDriverOnChannel($primaryPayload, $primary)) {
+            return true;
+        }
+
+        if ($backupChannel !== null) {
+            $backupPayload = $this->clonePayloadWithChannel($payload, $backupChannel);
+
+            return $this->dispatchToDriverOnChannel($backupPayload, $primary);
         }
 
         return false;
@@ -162,5 +220,74 @@ class Howl
             'null' => new NullDriver,
             default => throw new \InvalidArgumentException("Howl: unknown driver '{$name}'."),
         };
+    }
+
+    // -----------------------------------------------------------------------
+    // Private channel-dispatch helpers (Phase 3)
+    // -----------------------------------------------------------------------
+
+    /**
+     * Dispatch a payload to a specific channel by cloning the payload with a
+     * channel override, then walking the driver-level fallback chain.
+     */
+    private function dispatchToDriverOnChannel(Payload $payload, string $driverName): bool
+    {
+        // Per-call fallback (from Payload) takes priority over config fallback.
+        $fallback = $payload->fallback ?? $this->config['fallback'] ?? null;
+
+        // array_unique ensures we never call the same driver name twice
+        $chain = array_values(array_unique(array_filter([$driverName, $fallback])));
+
+        foreach ($chain as $name) {
+            try {
+                $driver = $this->resolveDriver($name);
+
+                if ($driver->send($payload)) {
+                    return true;
+                }
+
+                Log::error("Howl driver [{$name}] returned false", [
+                    'driver' => $name,
+                    'title' => $payload->title,
+                    'severity' => $payload->severity,
+                ]);
+            } catch (\Throwable $e) {
+                Log::error("Howl driver [{$name}] threw: {$e->getMessage()}", [
+                    'driver' => $name,
+                    'exception' => $e->getMessage(),
+                    'title' => $payload->title,
+                    'severity' => $payload->severity,
+                ]);
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Clone a payload with a different channel value (readonly-safe).
+     */
+    private function clonePayloadWithChannel(Payload $payload, string $channel): Payload
+    {
+        return new Payload(
+            title: $payload->title,
+            description: $payload->description,
+            severity: $payload->severity,
+            channel: $channel,
+            fields: $payload->fields,
+            codeBlocks: $payload->codeBlocks,
+            mentions: $payload->mentions,
+            meta: $payload->meta,
+            buttons: $payload->buttons,
+            attachments: $payload->attachments,
+            threadId: $payload->threadId,
+            username: $payload->username,
+            app: $payload->app,
+            env: $payload->env,
+            timestamp: $payload->timestamp,
+            forceSync: $payload->forceSync,
+            fallback: $payload->fallback,
+            driver: $payload->driver,
+        );
     }
 }

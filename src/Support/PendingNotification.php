@@ -14,6 +14,9 @@ class PendingNotification
 
     protected ?string $channel = null;
 
+    /** Per-call driver override — beats config('howl.driver') at dispatch time. */
+    protected ?string $driver = null;
+
     /** @var array<int, array{name: string, value: string, inline: bool}> */
     protected array $fields = [];
 
@@ -122,6 +125,18 @@ class PendingNotification
     {
         $clone = clone $this;
         $clone->channel = $channel;
+
+        return $clone;
+    }
+
+    /**
+     * Override the driver for this notification only.
+     * Clone-and-set pattern matching channel() — does NOT mutate the builder or singleton.
+     */
+    public function driver(string $name): static
+    {
+        $clone = clone $this;
+        $clone->driver = $name;
 
         return $clone;
     }
@@ -427,7 +442,7 @@ class PendingNotification
      */
     public function send(mixed $severityOrEvent = 'info', string $title = ''): bool
     {
-        // Allow Howl::onDiscord()->send(new SomeEvent()) shorthand — defers to event severity, never throws
+        // Allow (new PendingNotification)->send(new SomeEvent()) shorthand — defers to event severity, never throws
         if ($severityOrEvent instanceof HowlEvent) {
             return $this->acceptEvent($severityOrEvent)->send($severityOrEvent->severity());
         }
@@ -461,8 +476,8 @@ class PendingNotification
                 description: $this->description ?? $base->description,
                 // Explicit ->severity() override wins; else verb severity; else event severity
                 severity: $this->severityOverride ?? ($severity !== '' ? $severity : $base->severity),
-                // Builder channel wins if explicitly set, otherwise event channel
-                channel: $this->channel ?? $base->channel,
+                // Channel precedence: builder > event > config('howl.channel')
+                channel: $this->channel ?? $base->channel ?? config('howl.channel'),
                 // Event fields first, builder fields APPENDED (not replaced)
                 fields: array_merge($base->fields, $this->fields),
                 codeBlocks: array_merge($base->codeBlocks, $this->codeBlocks),
@@ -478,6 +493,7 @@ class PendingNotification
                 timestamp: $this->timestamp ?? $base->timestamp,
                 forceSync: $this->forceSync || $base->forceSync,
                 fallback: $this->fallback ?? $base->fallback,
+                driver: $this->driver,
             );
         }
 
@@ -486,7 +502,8 @@ class PendingNotification
             description: $this->description,
             // Explicit ->severity() override wins over verb severity
             severity: $this->severityOverride ?? $severity,
-            channel: $this->channel,
+            // Channel precedence: builder > config('howl.channel')
+            channel: $this->channel ?? config('howl.channel'),
             fields: $this->fields,
             codeBlocks: $this->codeBlocks,
             mentions: $this->mentions,
@@ -500,6 +517,7 @@ class PendingNotification
             timestamp: $this->timestamp,
             forceSync: $this->forceSync,
             fallback: $this->fallback,
+            driver: $this->driver,
         );
     }
 }
