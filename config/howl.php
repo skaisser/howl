@@ -134,14 +134,57 @@ return [
             'avatar_url' => env('HOWL_DISCORD_AVATAR_URL'),
         ],
 
-        // Future drivers (P-0006) — reserved scaffolding
         'telegram' => [
+            // Telegram bot token from @BotFather (format: '123456:ABC-DEF...').
             'bot_token' => env('HOWL_TELEGRAM_BOT_TOKEN'),
+
+            // Telegram supergroup chat_id (e.g. '-1001234567890').
+            //
+            // REQUIRED SETUP for thread routing:
+            //   1. Create a supergroup (NOT a regular group — must convert to supergroup).
+            //   2. Enable Forum mode: Group settings → Topics → toggle "Topics" on.
+            //   3. Add your bot to the supergroup with at least Read access.
+            //   4. Create one topic per Howl channel (errors, audits, etc.).
+            //   5. Get each topic's numeric ID via the Telegram Bot API getUpdates,
+            //      or by right-clicking the topic → Copy Link → the trailing number is the topic ID.
+            //
+            // If you don't need thread routing, leave `threads` empty and messages
+            // land in the supergroup's General topic.
             'chat_id' => env('HOWL_TELEGRAM_CHAT_ID'),
+
+            // Map Howl channel name → Telegram forum topic ID (integer).
+            // Empty map = no thread routing = all messages land in General.
+            'threads' => [
+                'errors'      => env('HOWL_TELEGRAM_THREAD_ERRORS'),
+                'warnings'    => env('HOWL_TELEGRAM_THREAD_WARNINGS'),
+                'info'        => env('HOWL_TELEGRAM_THREAD_INFO'),
+                'audit'       => env('HOWL_TELEGRAM_THREAD_AUDIT'),
+                'deployments' => env('HOWL_TELEGRAM_THREAD_DEPLOYMENTS'),
+            ],
+
+            'timeout' => env('HOWL_TELEGRAM_TIMEOUT', 10),
         ],
 
         'slack' => [
-            'webhook_url' => env('HOWL_SLACK_WEBHOOK_URL'),
+            // Slack App OAuth bot token. Requires `chat:write` scope minimum;
+            // `files:write` scope additionally needed for ->attach() support.
+            // Create at https://api.slack.com/apps → OAuth & Permissions → Install to Workspace.
+            'bot_token' => env('HOWL_SLACK_BOT_TOKEN'),
+
+            // Default Slack channel ID (e.g. 'C0123ABC') when no per-Howl-channel mapping matches.
+            // Get channel IDs by right-clicking the channel in Slack → Copy → Copy link (ID is the last segment).
+            'default_channel' => env('HOWL_SLACK_DEFAULT_CHANNEL'),
+
+            // Map Howl channel name → Slack channel ID for routing.
+            'channels' => [
+                'errors'      => env('HOWL_SLACK_CHANNEL_ERRORS'),
+                'warnings'    => env('HOWL_SLACK_CHANNEL_WARNINGS'),
+                'info'        => env('HOWL_SLACK_CHANNEL_INFO'),
+                'audit'       => env('HOWL_SLACK_CHANNEL_AUDIT'),
+                'deployments' => env('HOWL_SLACK_CHANNEL_DEPLOYMENTS'),
+            ],
+
+            'timeout' => env('HOWL_SLACK_TIMEOUT', 10),
         ],
     ],
 

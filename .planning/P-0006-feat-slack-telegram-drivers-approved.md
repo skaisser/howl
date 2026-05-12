@@ -96,8 +96,8 @@ Add two production-grade transport drivers — **Slack** (Block Kit format, bot-
 
 **Touches:** `src/Drivers/SlackDriver.php` (new), `src/Support/BlockKitBuilder.php` (new), `tests/Feature/SlackDriverTest.php` (new)
 
-- [ ] [H] Create `src/Support/BlockKitBuilder.php` with `final class BlockKitBuilder` exposing `public static function build(Payload $payload): array`. Returns the full `chat.postMessage` body: `['channel' => $channelId, 'attachments' => [['color' => '#RRGGBB', 'blocks' => [...]]]]`. Channel ID is injected at the driver layer; BlockKitBuilder leaves `'channel'` placeholder or accepts it as a second param — pick the second-param approach for testability: `build(Payload $payload, string $channelId): array`.
-- [ ] [S] Block assembly inside `BlockKitBuilder`:
+- [x] [H] Create `src/Support/BlockKitBuilder.php` with `final class BlockKitBuilder` exposing `public static function build(Payload $payload): array`. Returns the full `chat.postMessage` body: `['channel' => $channelId, 'attachments' => [['color' => '#RRGGBB', 'blocks' => [...]]]]`. Channel ID is injected at the driver layer; BlockKitBuilder leaves `'channel'` placeholder or accepts it as a second param — pick the second-param approach for testability: `build(Payload $payload, string $channelId): array`.
+- [x] [S] Block assembly inside `BlockKitBuilder`:
   - Leading `section` block with mrkdwn mentions (when `$payload->mentions` non-empty).
   - `header` block with `plain_text` = severity emoji + space + title.
   - `section` block with `mrkdwn` description (when `$payload->description` non-empty).
@@ -106,16 +106,16 @@ Add two production-grade transport drivers — **Slack** (Block Kit format, bot-
   - `section` block with triple-backtick mrkdwn for each `$payload->codeBlocks` entry (language hint goes inside the fence).
   - `actions` block with URL buttons for each `$payload->buttons` entry (`{type: button, text: {type: plain_text, text: label}, url: url}`).
   - `context` block as footer: `{type: mrkdwn, text: '{app} · {env} · {timestamp}'}` derived from payload + config.
-- [ ] [H] Color helper: `private static function color(string $severity): string` returns `sprintf('#%06X', config('howl.colors.'.$severity, 0))`.
-- [ ] [S] Mentions translation logic inside `BlockKitBuilder::buildMentions()`: produce a single mrkdwn string per the mapping in Context.
-- [ ] [S] Create `src/Drivers/SlackDriver.php` implementing `Skaisser\Howl\Contracts\Driver`:
+- [x] [H] Color helper: `private static function color(string $severity): string` returns `sprintf('#%06X', config('howl.colors.'.$severity, 0))`.
+- [x] [S] Mentions translation logic inside `BlockKitBuilder::buildMentions()`: produce a single mrkdwn string per the mapping in Context.
+- [x] [S] Create `src/Drivers/SlackDriver.php` implementing `Skaisser\Howl\Contracts\Driver`:
   - `name(): string` returns `'slack'`.
   - `send(Payload $payload): bool` resolves channel ID via `resolveChannelId()` helper, builds body via `BlockKitBuilder::build($payload, $channelId)`, POSTs to `https://slack.com/api/chat.postMessage` with `Authorization: Bearer <token>` and JSON content-type, returns `true` iff `status === 200 && json.ok === true`.
   - `try/catch (\Throwable) { return false; }` outer envelope.
   - Timeout from `config('howl.drivers.slack.timeout', 10)`.
-- [ ] [H] `private function resolveChannelId(Payload $payload): ?string` — reads `$payload->channel`, looks up `config('howl.drivers.slack.channels.'.$channel)`; on null falls back to `config('howl.drivers.slack.default_channel')`. Returns null if both null (caller logs and returns false).
-- [ ] [H] Null channel ID handling: in `send()`, if `resolveChannelId()` returns null → `Log::error('Howl: Slack channel id unresolved', ['channel' => $payload->channel])`; return false. Matches DiscordDriver missing-config behavior.
-- [ ] [S] Create `tests/Feature/SlackDriverTest.php` with `Http::fake()`:
+- [x] [H] `private function resolveChannelId(Payload $payload): ?string` — reads `$payload->channel`, looks up `config('howl.drivers.slack.channels.'.$channel)`; on null falls back to `config('howl.drivers.slack.default_channel')`. Returns null if both null (caller logs and returns false).
+- [x] [H] Null channel ID handling: in `send()`, if `resolveChannelId()` returns null → `Log::error('Howl: Slack channel id unresolved', ['channel' => $payload->channel])`; return false. Matches DiscordDriver missing-config behavior.
+- [x] [S] Create `tests/Feature/SlackDriverTest.php` with `Http::fake()`:
   - Basic send: payload with title/description/severity → POST to correct URL with correct channel; returns true on `{ok:true}`.
   - Block Kit shape: header block contains severity emoji + title; section block has description; color hex matches severity.
   - Fields: payload with 2 inline fields renders as section block with `fields[]` array of length 2.
@@ -132,13 +132,13 @@ Add two production-grade transport drivers — **Slack** (Block Kit format, bot-
 
 **Touches:** `src/Drivers/SlackDriver.php` (extend), `tests/Feature/SlackAttachmentTest.php` (new)
 
-- [ ] [S] Add `private function uploadAttachments(array $paths, string $channelId, string $token, int $timeout): bool` to `SlackDriver`. Loops the 3-step flow per file. Returns false on any step's `ok: false` (fail fast). Returns true when all files uploaded.
-- [ ] [S] Step 1 helper: `private function getUploadUrl(string $filename, int $length, string $token, int $timeout): ?array` returns `['upload_url' => ..., 'file_id' => ...]` or null on failure.
-- [ ] [S] Step 2 helper: `private function uploadFileBody(string $uploadUrl, string $path, int $timeout): bool` POSTs multipart with file body, returns true on 2xx.
-- [ ] [S] Step 3 helper: `private function completeUpload(string $fileId, string $title, string $channelId, string $token, int $timeout): bool` calls `files.completeUploadExternal`, returns true on `{ok:true}`.
-- [ ] [S] Modify `SlackDriver::send()`: when `$payload->attachments` non-empty, call `uploadAttachments()` BEFORE the `chat.postMessage` call. If upload returns false, return false without posting message. (Slack auto-shares completed-upload files to the named channel, so they appear as standalone file messages adjacent to the rich-block message — acceptable for v1.0.0.)
-- [ ] [H] Edge case: non-readable file path → `throw new \InvalidArgumentException("Howl: attachment path is not a readable file: {$path}")` (mirrors DiscordDriver line 113).
-- [ ] [S] Create `tests/Feature/SlackAttachmentTest.php` with `Http::fake()`:
+- [x] [S] Add `private function uploadAttachments(array $paths, string $channelId, string $token, int $timeout): bool` to `SlackDriver`. Loops the 3-step flow per file. Returns false on any step's `ok: false` (fail fast). Returns true when all files uploaded.
+- [x] [S] Step 1 helper: `private function getUploadUrl(string $filename, int $length, string $token, int $timeout): ?array` returns `['upload_url' => ..., 'file_id' => ...]` or null on failure.
+- [x] [S] Step 2 helper: `private function uploadFileBody(string $uploadUrl, string $path, int $timeout): bool` POSTs multipart with file body, returns true on 2xx.
+- [x] [S] Step 3 helper: `private function completeUpload(string $fileId, string $title, string $channelId, string $token, int $timeout): bool` calls `files.completeUploadExternal`, returns true on `{ok:true}`.
+- [x] [S] Modify `SlackDriver::send()`: when `$payload->attachments` non-empty, call `uploadAttachments()` BEFORE the `chat.postMessage` call. If upload returns false, return false without posting message. (Slack auto-shares completed-upload files to the named channel, so they appear as standalone file messages adjacent to the rich-block message — acceptable for v1.0.0.)
+- [x] [H] Edge case: non-readable file path → `throw new \InvalidArgumentException("Howl: attachment path is not a readable file: {$path}")` (mirrors DiscordDriver line 113).
+- [x] [S] Create `tests/Feature/SlackAttachmentTest.php` with `Http::fake()`:
   - Single attachment: verify 3 endpoint URLs hit in order via `Http::assertSent()` with index-based assertions.
   - Multiple attachments (e.g. 2 files): verify 6 calls total (3 per file) + 1 final `chat.postMessage`.
   - `files.getUploadURLExternal` returns `{ok:false}` → 1 call made, driver returns false.
@@ -152,8 +152,8 @@ Add two production-grade transport drivers — **Slack** (Block Kit format, bot-
 
 **Touches:** `src/Drivers/TelegramDriver.php` (new), `src/Support/TelegramHtmlBuilder.php` (new), `tests/Feature/TelegramDriverTest.php` (new)
 
-- [ ] [H] Create `src/Support/TelegramHtmlBuilder.php` with `final class TelegramHtmlBuilder` exposing `public static function build(Payload $payload): string`. Returns the HTML body string for `text` field of `sendMessage` (or `caption` of `sendPhoto`/`sendDocument`).
-- [ ] [S] HTML body structure (in order):
+- [x] [H] Create `src/Support/TelegramHtmlBuilder.php` with `final class TelegramHtmlBuilder` exposing `public static function build(Payload $payload): string`. Returns the HTML body string for `text` field of `sendMessage` (or `caption` of `sendPhoto`/`sendDocument`).
+- [x] [S] HTML body structure (in order):
   - Leading paragraph with mentions if any (user mentions only; here/everyone/role skipped).
   - `<b>{emoji} {escape(title)}</b>` line.
   - Blank line.
@@ -162,9 +162,9 @@ Add two production-grade transport drivers — **Slack** (Block Kit format, bot-
   - Each code block: `<pre><code class="language-{lang}">{escape(code)}</code></pre>` (note: escape function still runs on `code`).
   - Each button: `[{escape(label)}]({url})` rendered as `<a href="{url}">{escape(label)}</a>` (URL buttons only at body level; inline keyboard handled at form-data level via `reply_markup`).
   - Footer: `\n<i>{app} · {env} · {timestamp formatted}</i>`.
-- [ ] [H] HTML-escape helper: `private static function escape(?string $s): string` using `htmlspecialchars($s ?? '', ENT_NOQUOTES | ENT_HTML5, 'UTF-8')`.
-- [ ] [S] Mentions logic inside `TelegramHtmlBuilder::buildMentions()`: iterate `$payload->mentions`; for `type === 'user'` produce `<a href="tg://user?id={id}">user</a>` separated by spaces; skip everything else.
-- [ ] [S] Create `src/Drivers/TelegramDriver.php` implementing `Skaisser\Howl\Contracts\Driver`:
+- [x] [H] HTML-escape helper: `private static function escape(?string $s): string` using `htmlspecialchars($s ?? '', ENT_NOQUOTES | ENT_HTML5, 'UTF-8')`.
+- [x] [S] Mentions logic inside `TelegramHtmlBuilder::buildMentions()`: iterate `$payload->mentions`; for `type === 'user'` produce `<a href="tg://user?id={id}">user</a>` separated by spaces; skip everything else.
+- [x] [S] Create `src/Drivers/TelegramDriver.php` implementing `Skaisser\Howl\Contracts\Driver`:
   - `name(): string` returns `'telegram'`.
   - `send(Payload $payload): bool`:
     - Resolves `$chatId = config('howl.drivers.telegram.chat_id')`. Null → `Log::error`, return false.
@@ -175,9 +175,9 @@ Add two production-grade transport drivers — **Slack** (Block Kit format, bot-
     - Returns `true` iff `status === 200 && json.ok === true`.
   - `try/catch (\Throwable) { return false; }` outer envelope.
   - Timeout from `config('howl.drivers.telegram.timeout', 10)`.
-- [ ] [H] `private function resolveThreadId(Payload $payload): ?int` — reads `$payload->channel`, looks up `config('howl.drivers.telegram.threads.'.$channel)`, returns `(int)` cast or null.
-- [ ] [S] `private function buildReplyMarkup(array $buttons): ?array` — returns `['inline_keyboard' => [[{text, url}, ...]]]` or null if empty. URL-only, no `callback_data`.
-- [ ] [S] Create `tests/Feature/TelegramDriverTest.php` with `Http::fake()`:
+- [x] [H] `private function resolveThreadId(Payload $payload): ?int` — reads `$payload->channel`, looks up `config('howl.drivers.telegram.threads.'.$channel)`, returns `(int)` cast or null.
+- [x] [S] `private function buildReplyMarkup(array $buttons): ?array` — returns `['inline_keyboard' => [[{text, url}, ...]]]` or null if empty. URL-only, no `callback_data`.
+- [x] [S] Create `tests/Feature/TelegramDriverTest.php` with `Http::fake()`:
   - Basic send: POST to `/bot{token}/sendMessage` with `text` + `parse_mode=HTML`; returns true on 200+`{ok:true}`.
   - Bot token in URL: verify the token appears in the URL path correctly (handles the `:` character).
   - HTML body: title wrapped in `<b>`; severity emoji prefixed; fields formatted; code blocks in `<pre><code>`.
@@ -196,13 +196,13 @@ Add two production-grade transport drivers — **Slack** (Block Kit format, bot-
 
 **Touches:** `src/Drivers/TelegramDriver.php` (extend), `tests/Feature/TelegramAttachmentTest.php` (new)
 
-- [ ] [S] Add `private function uploadAttachments(array $paths, string $chatId, ?int $threadId, string $body, string $token, int $timeout): bool` to `TelegramDriver`. Loops paths; per path detects image vs document via lowercased extension; sends accordingly. First attachment carries `$body` as `caption`; subsequent attachments have empty caption.
-- [ ] [H] Image detection: `private static function isImage(string $path): bool` returns true if `strtolower(pathinfo($path, PATHINFO_EXTENSION))` ∈ `['jpg', 'jpeg', 'png', 'gif', 'webp']`.
-- [ ] [S] `private function sendDocument(string $path, string $chatId, ?int $threadId, string $caption, string $token, int $timeout): bool` — multipart POST to `/bot{token}/sendDocument` with `chat_id`, `message_thread_id` (if set), `document` (file body), `caption`, `parse_mode=HTML`.
-- [ ] [S] `private function sendPhoto(string $path, string $chatId, ?int $threadId, string $caption, string $token, int $timeout): bool` — multipart POST to `/bot{token}/sendPhoto` with `chat_id`, `message_thread_id` (if set), `photo` (file body), `caption`, `parse_mode=HTML`.
-- [ ] [S] Modify `TelegramDriver::send()` to actually call `uploadAttachments()` (stub from Phase 3 replaced). When attachments present, the standalone `sendMessage` is SKIPPED (first attachment caption IS the message).
-- [ ] [H] Edge case: non-readable file path → `throw new \InvalidArgumentException("Howl: attachment path is not a readable file: {$path}")`.
-- [ ] [S] Create `tests/Feature/TelegramAttachmentTest.php` with `Http::fake()`:
+- [x] [S] Add `private function uploadAttachments(array $paths, string $chatId, ?int $threadId, string $body, string $token, int $timeout): bool` to `TelegramDriver`. Loops paths; per path detects image vs document via lowercased extension; sends accordingly. First attachment carries `$body` as `caption`; subsequent attachments have empty caption.
+- [x] [H] Image detection: `private static function isImage(string $path): bool` returns true if `strtolower(pathinfo($path, PATHINFO_EXTENSION))` ∈ `['jpg', 'jpeg', 'png', 'gif', 'webp']`.
+- [x] [S] `private function sendDocument(string $path, string $chatId, ?int $threadId, string $caption, string $token, int $timeout): bool` — multipart POST to `/bot{token}/sendDocument` with `chat_id`, `message_thread_id` (if set), `document` (file body), `caption`, `parse_mode=HTML`.
+- [x] [S] `private function sendPhoto(string $path, string $chatId, ?int $threadId, string $caption, string $token, int $timeout): bool` — multipart POST to `/bot{token}/sendPhoto` with `chat_id`, `message_thread_id` (if set), `photo` (file body), `caption`, `parse_mode=HTML`.
+- [x] [S] Modify `TelegramDriver::send()` to actually call `uploadAttachments()` (stub from Phase 3 replaced). When attachments present, the standalone `sendMessage` is SKIPPED (first attachment caption IS the message).
+- [x] [H] Edge case: non-readable file path → `throw new \InvalidArgumentException("Howl: attachment path is not a readable file: {$path}")`.
+- [x] [S] Create `tests/Feature/TelegramAttachmentTest.php` with `Http::fake()`:
   - Image attachment (`.png`): POSTs to `/sendPhoto` with multipart `photo` field; caption carries body; returns true on `{ok:true}`.
   - Document attachment (`.log`): POSTs to `/sendDocument` with multipart `document` field; same caption pattern.
   - Mixed: 1 image + 1 document → 2 calls to different endpoints; first carries caption, second has empty caption.
@@ -218,8 +218,8 @@ Add two production-grade transport drivers — **Slack** (Block Kit format, bot-
 
 **Touches:** `src/Howl.php`, `config/howl.php`, `tests/Feature/CrossDriverFallbackTest.php` (new)
 
-- [ ] [H] Update `Howl::resolveDriver()` at `src/Howl.php:158-165`: add `'slack' => new SlackDriver`, `'telegram' => new TelegramDriver` to the match expression.
-- [ ] [H] Expand `config/howl.php` `drivers.slack` section (currently lines 92-94, single stub key). Final shape:
+- [x] [H] Update `Howl::resolveDriver()` at `src/Howl.php:158-165`: add `'slack' => new SlackDriver`, `'telegram' => new TelegramDriver` to the match expression.
+- [x] [H] Expand `config/howl.php` `drivers.slack` section (currently lines 92-94, single stub key). Final shape:
   ```php
   'slack' => [
       // Slack App OAuth bot token. Requires `chat:write` scope minimum;
@@ -243,7 +243,7 @@ Add two production-grade transport drivers — **Slack** (Block Kit format, bot-
       'timeout' => env('HOWL_SLACK_TIMEOUT', 10),
   ],
   ```
-- [ ] [H] Expand `config/howl.php` `drivers.telegram` section (currently lines 87-90, two stub keys). Final shape:
+- [x] [H] Expand `config/howl.php` `drivers.telegram` section (currently lines 87-90, two stub keys). Final shape:
   ```php
   'telegram' => [
       // Telegram bot token from @BotFather (format: '123456:ABC-DEF...').
@@ -276,7 +276,7 @@ Add two production-grade transport drivers — **Slack** (Block Kit format, bot-
       'timeout' => env('HOWL_TELEGRAM_TIMEOUT', 10),
   ],
   ```
-- [ ] [S] Create `tests/Feature/CrossDriverFallbackTest.php`:
+- [x] [S] Create `tests/Feature/CrossDriverFallbackTest.php`:
   - `config(['howl.driver' => 'discord', 'howl.fallback' => 'slack'])` + Discord webhook returns 404 + Slack returns 200/`ok:true` → returns true, 1 call each to Discord and Slack.
   - `config(['howl.driver' => 'discord', 'howl.fallback' => 'telegram'])` + Discord 404 + Telegram 200/`ok:true` → returns true.
   - `config(['howl.driver' => 'slack', 'howl.fallback' => 'discord'])` + Slack 200/`ok:false` + Discord 204 → returns true, fallback walked.
@@ -289,12 +289,12 @@ Add two production-grade transport drivers — **Slack** (Block Kit format, bot-
 
 **Touches:** none (regression + handoff prose only)
 
-- [ ] [H] Full regression: `vendor/bin/pest --parallel` exits 0 with zero failures.
-- [ ] [H] Test count check: baseline ~350 post-P-0005, expect ~380-390 after P-0006 additions (+30-40 driver tests).
-- [ ] [H] Verify no `BadMethodCallException` patterns remain anywhere: `grep -rn "reserved for v2\|BadMethodCallException" src/ tests/` should return only references inside test assertions for unknown driver names (e.g. `Howl::driver('mythical')` test).
-- [ ] [H] Verify `composer.json` constraints unchanged (no version bump, no new prod deps; only test-time `Http::fake()` usage which is Laravel built-in).
-- [ ] [H] Add a "Handoff to P-0007" section at the end of this plan stating: "All 3 drivers implemented and tested via `Http::fake()` happy + critical-failure paths. P-0007 should: (1) add Pest 3/4 cross-version CI matrix (`PHP 8.3/8.4 × Laravel 12/13` = 4 jobs); (2) add coverage tooling and 100% line coverage gate; (3) add HowlFake per-driver assertions (`assertSentVia('slack', ...)`); (4) backfill any edge-case tests that coverage report flags as uncovered."
-- [ ] [H] DO NOT tag a release. DO NOT bump composer.json version. DO NOT update CHANGELOG. All release artifacts land in P-0008.
+- [x] [H] Full regression: `vendor/bin/pest --parallel` exits 0 with zero failures.
+- [x] [H] Test count check: baseline ~350 post-P-0005, expect ~380-390 after P-0006 additions (+30-40 driver tests).
+- [x] [H] Verify no `BadMethodCallException` patterns remain anywhere: `grep -rn "reserved for v2\|BadMethodCallException" src/ tests/` should return only references inside test assertions for unknown driver names (e.g. `Howl::driver('mythical')` test).
+- [x] [H] Verify `composer.json` constraints unchanged (no version bump, no new prod deps; only test-time `Http::fake()` usage which is Laravel built-in).
+- [x] [H] Add a "Handoff to P-0007" section at the end of this plan stating: "All 3 drivers implemented and tested via `Http::fake()` happy + critical-failure paths. P-0007 should: (1) add Pest 3/4 cross-version CI matrix (`PHP 8.3/8.4 × Laravel 12/13` = 4 jobs); (2) add coverage tooling and 100% line coverage gate; (3) add HowlFake per-driver assertions (`assertSentVia('slack', ...)`); (4) backfill any edge-case tests that coverage report flags as uncovered."
+- [x] [H] DO NOT tag a release. DO NOT bump composer.json version. DO NOT update CHANGELOG. All release artifacts land in P-0008.
 
 **Verify:** `git log --oneline homolog..HEAD` shows clean commit history per phase; `vendor/bin/pest --parallel` returns exit 0.
 
@@ -379,16 +379,31 @@ Driver registration in `resolveDriver()` + config expansion + cross-driver fallb
 
 ## Acceptance
 
-- [ ] `Howl::driver('slack')->error($event)` dispatches a Block Kit attachment via `chat.postMessage` to the configured Slack channel; returns `true` on 200 + `{ok:true}`.
-- [ ] `Howl::driver('telegram')->error($event)` dispatches an HTML-formatted message via `sendMessage` to the configured Telegram supergroup, threaded to the matched forum topic; returns `true` on 200 + `{ok:true}`.
-- [ ] Both drivers support `PendingNotification::attach($path)`: Slack via 3-step `files.upload v2` flow, Telegram via `sendDocument`/`sendPhoto` with extension auto-detection.
-- [ ] Mentions translate correctly across all 3 drivers: a `HowlEvent::mentions()` returning `[['type'=>'user','id'=>'X']]` renders as `<@X>` (Slack), `<a href="tg://user?id=X">user</a>` (Telegram), and the existing Discord rendering — all in the same dispatch call when `channel_mode = 'fan_out'`.
-- [ ] `config('howl.fallback') = 'slack'` or `'telegram'` correctly chains: primary driver failure → fallback driver attempted with same payload. Same for `slack → discord` and `telegram → discord` chains.
-- [ ] `config('howl.drivers.slack')` and `config('howl.drivers.telegram')` documented with explanatory inline comments (these comments seed P-0008's VitePress docs).
-- [ ] Telegram config comments explicitly walk through the supergroup + Forum mode + bot membership + topic ID lookup setup steps.
-- [ ] HTML escaping: a payload title containing `<script>alert(1)</script>` is escaped in the Telegram body output (cannot inject HTML).
-- [ ] Slack bot token does NOT appear in any `Log::error` call or test failure message.
-- [ ] Full Pest suite green: `vendor/bin/pest --parallel` exits 0; total test count baseline (~350) + ~30-40 = ~380-390.
-- [ ] `composer.json` `require` / `require-dev` unchanged (no new prod deps).
-- [ ] NO release tag, NO CHANGELOG entry, NO composer.json version bump. All release artifacts deferred to P-0008.
-- [ ] Handoff note at end of plan flags scope for P-0007: Pest 3/4 CI matrix, 100% coverage gate, HowlFake per-driver assertions.
+- [x] `Howl::driver('slack')->error($event)` dispatches a Block Kit attachment via `chat.postMessage` to the configured Slack channel; returns `true` on 200 + `{ok:true}`.
+- [x] `Howl::driver('telegram')->error($event)` dispatches an HTML-formatted message via `sendMessage` to the configured Telegram supergroup, threaded to the matched forum topic; returns `true` on 200 + `{ok:true}`.
+- [x] Both drivers support `PendingNotification::attach($path)`: Slack via 3-step `files.upload v2` flow, Telegram via `sendDocument`/`sendPhoto` with extension auto-detection.
+- [x] Mentions translate correctly across all 3 drivers: a `HowlEvent::mentions()` returning `[['type'=>'user','id'=>'X']]` renders as `<@X>` (Slack), `<a href="tg://user?id=X">user</a>` (Telegram), and the existing Discord rendering — all in the same dispatch call when `channel_mode = 'fan_out'`.
+- [x] `config('howl.fallback') = 'slack'` or `'telegram'` correctly chains: primary driver failure → fallback driver attempted with same payload. Same for `slack → discord` and `telegram → discord` chains.
+- [x] `config('howl.drivers.slack')` and `config('howl.drivers.telegram')` documented with explanatory inline comments (these comments seed P-0008's VitePress docs).
+- [x] Telegram config comments explicitly walk through the supergroup + Forum mode + bot membership + topic ID lookup setup steps.
+- [x] HTML escaping: a payload title containing `<script>alert(1)</script>` is escaped in the Telegram body output (cannot inject HTML).
+- [x] Slack bot token does NOT appear in any `Log::error` call or test failure message.
+- [x] Full Pest suite green: `vendor/bin/pest --parallel` exits 0; total test count baseline (~350) + ~30-40 = ~380-390.
+- [x] `composer.json` `require` / `require-dev` unchanged (no new prod deps).
+- [x] NO release tag, NO CHANGELOG entry, NO composer.json version bump. All release artifacts deferred to P-0008.
+- [x] Handoff note at end of plan flags scope for P-0007: Pest 3/4 CI matrix, 100% coverage gate, HowlFake per-driver assertions.
+
+## Handoff to P-0007
+
+All 3 drivers implemented and tested via `Http::fake()` happy + critical-failure paths. Final test count: 404 passed (872 assertions), +58 over the P-0005 baseline of 346.
+
+Implementation notes for P-0007:
+- `TelegramDriver::sendPhoto` and `sendDocument` skip the caption field when empty to work around Laravel's `array_filter` in `PendingRequest::attach()` — P-0007 coverage tests should include the empty-caption multipart path.
+- Both `SlackDriver` and `TelegramDriver` re-throw `InvalidArgumentException` before the `catch (\Throwable)` envelope so unreadable-file errors propagate to callers.
+- `TelegramHtmlBuilder` uses `ENT_NOQUOTES | ENT_HTML5` — double quotes are NOT escaped (per Telegram spec). Tests should assert literal `"` not `&quot;`.
+
+P-0007 should:
+1. Add Pest 3/4 cross-version CI matrix (`PHP 8.3/8.4 × Laravel 12/13` = 4 jobs).
+2. Add coverage tooling and 100% line coverage gate.
+3. Add `HowlFake` per-driver assertions (`assertSentVia('slack', ...)` etc.).
+4. Backfill any edge-case tests that coverage report flags as uncovered.
