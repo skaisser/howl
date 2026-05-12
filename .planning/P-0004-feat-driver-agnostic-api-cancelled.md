@@ -8,6 +8,14 @@ base: main
 tags: [api-redesign, facade, drivers, channel-fallback, deprecation, v0-3-0]
 backlog: null
 dependsOn: [P-0003]
+status: cancelled
+---
+
+> **CANCELLED — Superseded by P-0005**
+>
+> Interview decisions reshaped scope: hard-cut deprecation (no aliases), drivers split to P-0006,
+> docs infrastructure split to P-0008, v1.0.0 as final destination (not v0.3.0).
+> See [P-0005](./P-0005-feat-driver-agnostic-api-and-channel-modes-reviewed.md) for the implemented plan.
 created: 2026-05-12T00:30
 session_id: null
 ---
