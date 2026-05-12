@@ -27,6 +27,25 @@ class SendHowlJob implements ShouldQueue
     }
 
     /**
+     * Opt-in queue rate-limit middleware.
+     *
+     * When config('howl.rate_limiter_key') is non-null, wraps each job with
+     * RateLimitedWithRedis using that key. Rate-limit releases do NOT count
+     * against $tries. When null (default), no throttling is applied.
+     *
+     * Register the limiter in AppServiceProvider::boot():
+     *   RateLimiter::for('howl-discord', fn () => Limit::perMinute(28));
+     */
+    public function middleware(): array
+    {
+        $key = config('howl.rate_limiter_key');
+
+        return $key !== null
+            ? [new \Illuminate\Queue\Middleware\RateLimitedWithRedis($key)]
+            : [];
+    }
+
+    /**
      * Execute the job. Resolves the driver from the Howl instance and calls send().
      * On false return or exception, lets the queue retry (throws RuntimeException).
      */
