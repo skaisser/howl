@@ -7,17 +7,31 @@ export default defineConfig({
   ignoreDeadLinks: true,
 
   head: [
-    ['link', { rel: 'icon', type: 'image/png', href: '/favicon.png' }],
-    ['meta', { name: 'theme-color', content: '#8B0000' }],
+    // Favicons
+    ['link', { rel: 'icon', type: 'image/png', href: '/favicon-96x96.png', sizes: '96x96' }],
+    ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+    ['link', { rel: 'shortcut icon', href: '/favicon.ico' }],
+    ['link', { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' }],
+    ['link', { rel: 'manifest', href: '/site.webmanifest' }],
+    ['meta', { name: 'apple-mobile-web-app-title', content: 'Howl' }],
+    ['meta', { name: 'theme-color', content: '#14213a' }],
+    // Open Graph
     ['meta', { property: 'og:type', content: 'website' }],
     ['meta', { property: 'og:locale', content: 'en' }],
     ['meta', { property: 'og:title', content: 'Howl — Multi-driver Laravel Notifier' }],
+    ['meta', { property: 'og:description', content: 'Multi-driver Laravel notifier (Discord, Slack, Telegram) with rich embeds, channel failover, and queue-aware dispatch.' }],
     ['meta', { property: 'og:site_name', content: 'Howl' }],
     ['meta', { property: 'og:url', content: 'https://howl.skaisser.dev/' }],
+    ['meta', { property: 'og:image', content: 'https://howl.skaisser.dev/hero-howl.png' }],
+    // Twitter Card
+    ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
+    ['meta', { name: 'twitter:title', content: 'Howl — Multi-driver Laravel Notifier' }],
+    ['meta', { name: 'twitter:description', content: 'Discord, Slack, Telegram with rich embeds, channel failover, and queue-aware dispatch.' }],
+    ['meta', { name: 'twitter:image', content: 'https://howl.skaisser.dev/hero-howl.png' }],
   ],
 
   themeConfig: {
-    logo: '🐺',
+    logo: { src: '/logo-howl.svg', alt: 'Howl' },
 
     nav: [
       {
