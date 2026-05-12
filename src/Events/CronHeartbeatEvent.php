@@ -41,7 +41,7 @@ class CronHeartbeatEvent extends HowlEvent
 
     public function title(): string
     {
-        return "⏱️ Cron: {$this->scheduleName} — {$this->status}";
+        return "Cron: {$this->scheduleName} — {$this->status}";
     }
 
     public function description(): string

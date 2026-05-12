@@ -37,7 +37,7 @@ it('channel() returns audit', function () {
 it('title() contains the action', function () {
     $event = new AuditEvent('admin@example.com', 'deleted', 'User#42');
 
-    expect($event->title())->toBe('🔒 Audit: deleted');
+    expect($event->title())->toBe('Audit: deleted');
 });
 
 // ---------------------------------------------------------------------------
@@ -193,7 +193,7 @@ it('toPayload() returns a Payload with severity=audit, correct title, 3 fields, 
 
     expect($payload)->toBeInstanceOf(Payload::class)
         ->and($payload->severity)->toBe('audit')
-        ->and($payload->title)->toBe('🔒 Audit: updated')
+        ->and($payload->title)->toBe('Audit: updated')
         ->and($payload->fields)->toHaveCount(3)   // Actor + Action + Target (no links)
         ->and($payload->codeBlocks)->toHaveCount(1)
         ->and($payload->meta)->toHaveKey('actor');

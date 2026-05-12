@@ -14,7 +14,7 @@
 
 <p>
   <a href="https://github.com/skaisser/howl/actions/workflows/test.yml"><img src="https://img.shields.io/github/actions/workflow/status/skaisser/howl/test.yml?style=for-the-badge&label=Tests&logo=github" alt="Tests"></a>
-  <img src="https://img.shields.io/badge/Tests-480%20passing-success?style=for-the-badge&logo=pestphp" alt="480 Tests Passing">
+  <img src="https://img.shields.io/badge/Tests-487%20passing-success?style=for-the-badge&logo=pestphp" alt="487 Tests Passing">
   <img src="https://img.shields.io/badge/Coverage-100%25-brightgreen?style=for-the-badge&logo=codecov" alt="100% Coverage">
 </p>
 
@@ -46,7 +46,7 @@ A single driver-agnostic API for Discord, Slack, and Telegram. Drop it into any 
 - 📦 **Seven built-in event templates** — exceptions, deployments, audits, cron heartbeats, job failures, manual ops, generic info
 - 🧪 **HowlFake test helper** — assert notifications without real HTTP calls; per-driver assertions
 - ⚡ **Queue-aware** with exponential backoff and opt-in Redis rate limiting
-- ✅ **100% line coverage** across 480 tests, enforced by `pest --coverage --min=100`
+- ✅ **100% line coverage** across 487 tests, enforced by `pest --coverage --min=100`
 - 📚 **Versioned docs** at `howl.skaisser.dev` plus machine-readable `llms.txt` for AI agents
 
 ---

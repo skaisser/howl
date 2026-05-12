@@ -1,5 +1,5 @@
 {
-    "title": "🚨 Job retry exhausted: SyncInventoryJob",
+    "title": "Job retry exhausted: SyncInventoryJob",
     "description": "AMQP connection refused after 3 retries",
     "severity": "error",
     "channel": "errors",

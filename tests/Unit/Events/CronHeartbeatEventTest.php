@@ -45,11 +45,11 @@ it('channel() returns errors when status is failed', function () {
 // 3. title
 // ---------------------------------------------------------------------------
 
-it('title() contains schedule name and status', function () {
+it('title() contains schedule name and status (no severity emoji — EmbedBuilder prepends)', function () {
     $event = new CronHeartbeatEvent('invoices:send', new DateTime('2026-05-11 08:00:00'), 'ok');
 
     expect($event->title())
-        ->toContain('⏱️')
+        ->not->toContain('⏱️')   // emoji prefix is added by EmbedBuilder, not here
         ->toContain('invoices:send')
         ->toContain('ok');
 });

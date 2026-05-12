@@ -36,7 +36,7 @@ it('channel() returns errors', function () {
 it('title() defaults to class-basename of the exception', function () {
     $event = new GenericExceptionEvent(new RuntimeException('boom'));
 
-    expect($event->title())->toBe('🚨 Exception: RuntimeException');
+    expect($event->title())->toBe('Exception: RuntimeException');
 });
 
 it('title() uses custom title when provided', function () {

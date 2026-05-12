@@ -45,7 +45,7 @@ class AuditEvent extends HowlEvent
 
     public function title(): string
     {
-        return "🔒 Audit: {$this->action}";
+        return "Audit: {$this->action}";
     }
 
     public function description(): string

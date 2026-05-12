@@ -40,7 +40,7 @@ class ManualOperationEvent extends HowlEvent
 
     public function title(): string
     {
-        return "ℹ️ Manual op: {$this->command} by {$this->operator}";
+        return "Manual op: {$this->command} by {$this->operator}";
     }
 
     public function description(): string
