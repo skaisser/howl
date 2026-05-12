@@ -6,8 +6,8 @@ hero:
   text: Multi-driver Laravel Notifier
   tagline: Discord, Slack, and Telegram alerts with rich embeds, channel failover, and queue-aware dispatch. PHP 8.3+, Laravel 12 & 13.
   image:
-    src: /hero-logo.png
-    alt: Howl
+    src: /hero-howl.webp
+    alt: Howl — wolf howling at the moon with Discord, Slack, and Telegram signal trails
   actions:
     - theme: brand
       text: Get Started
