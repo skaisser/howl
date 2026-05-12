@@ -1,0 +1,9 @@
+{
+  "pr": 4,
+  "plan_id": "0007",
+  "reviewed_at": "2026-05-12T03:34:16-03:00",
+  "reviewer_verdict": "approved",
+  "commit_sha": "8c152c7d3c8135a3d71b9be56769d28c56db2666",
+  "bypass": false,
+  "source": "local"
+}

@@ -21,7 +21,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read
+      pull-requests: write
       issues: read
       id-token: write
 
@@ -41,4 +41,31 @@ jobs:
           prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }}'
           # See https://github.com/anthropics/claude-code-action/blob/main/docs/usage.md
           # or https://code.claude.com/docs/en/cli-reference for available options
+
+      - name: Post APPROVED review on no-findings
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          OWNER: ${{ github.repository_owner }}
+          REPO: ${{ github.event.repository.name }}
+          COMMIT_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          # Count inline review comments left by claude[bot] on the HEAD commit.
+          # If zero, the bot reviewed cleanly with no findings — submit an
+          # explicit APPROVED review so downstream auto-merge stamps it.
+          INLINE_COUNT=$(gh api "repos/$OWNER/$REPO/pulls/$PR_NUMBER/comments" \
+            --jq '[.[] | select(.user.login == "claude[bot]" and .commit_id == "'"$COMMIT_SHA"'")] | length')
+
+          echo "claude[bot] inline comments on commit $COMMIT_SHA: $INLINE_COUNT"
+
+          if [ "$INLINE_COUNT" = "0" ]; then
+            echo "No inline findings — posting APPROVED review."
+            gh api "repos/$OWNER/$REPO/pulls/$PR_NUMBER/reviews" \
+              -f event=APPROVE \
+              -f body="✅ Automated code review by @claude — no blocking issues found." \
+              -f commit_id="$COMMIT_SHA"
+          else
+            echo "Bot left $INLINE_COUNT inline comments — skipping APPROVE summary."
+          fi
 
