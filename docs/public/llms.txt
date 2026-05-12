@@ -1,0 +1,35 @@
+# Howl
+
+> Multi-driver Laravel notifier (Discord, Slack, Telegram) with rich embeds, channel failover, and queue-aware dispatch. PHP 8.3+, Laravel 12/13.
+
+## Quick Start
+- [Installation](https://howl.skaisser.dev/v1.0.0/guide/installation): composer require, env setup
+- [Quick Start](https://howl.skaisser.dev/v1.0.0/guide/quick-start): 5-minute walkthrough
+
+## Drivers
+- [Discord](https://howl.skaisser.dev/v1.0.0/drivers/discord): webhook + thread routing
+- [Slack](https://howl.skaisser.dev/v1.0.0/drivers/slack): Block Kit + bot OAuth
+- [Telegram](https://howl.skaisser.dev/v1.0.0/drivers/telegram): HTML + Forum topics
+
+## Configuration
+- [Reference](https://howl.skaisser.dev/v1.0.0/configuration/reference): every config key documented
+- [Channel routing](https://howl.skaisser.dev/v1.0.0/configuration/channel-routing): per-call, event-level, config precedence
+- [Failover & fan-out](https://howl.skaisser.dev/v1.0.0/configuration/failover-and-fan-out): automatic backup channel dispatch
+- [Rate limiting](https://howl.skaisser.dev/v1.0.0/configuration/rate-limiting): Redis-backed opt-in throttling
+
+## Events, Testing, Extension
+- [Event contract](https://howl.skaisser.dev/v1.0.0/events/contract): HowlEvent abstract base + 8-method contract
+- [Built-in events](https://howl.skaisser.dev/v1.0.0/events/built-in): 7 production-ready event templates
+- [Custom events](https://howl.skaisser.dev/v1.0.0/events/custom): extend HowlEvent for domain events
+- [HowlFake testing](https://howl.skaisser.dev/v1.0.0/testing/howl-fake): first-class test assertions without real HTTP
+- [Architecture tests](https://howl.skaisser.dev/v1.0.0/testing/architecture): Pest arch() structural enforcement
+- [Custom drivers](https://howl.skaisser.dev/v1.0.0/extension/custom-driver): implement Driver contract for any service
+- [Builder methods](https://howl.skaisser.dev/v1.0.0/extension/builder-methods): full PendingNotification fluent API
+- [Queue & rate limit](https://howl.skaisser.dev/v1.0.0/extension/queue-and-rate-limit): async dispatch + SendHowlJob
+
+## Reference
+- [API reference](https://howl.skaisser.dev/v1.0.0/reference/api): Howl facade, PendingNotification, Payload, Driver contract
+
+## Upgrade
+- [Upgrade Guide v0.x → v1.0](https://howl.skaisser.dev/v1.0.0/upgrade): migration codemod + breaking changes + new env vars
+- [Release Notes](https://howl.skaisser.dev/v1.0.0/releases): what's new in v1.0.0

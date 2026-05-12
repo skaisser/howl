@@ -3,7 +3,7 @@
     "description": "Multi-driver Laravel notifier with Discord-first rich embeds, mentions, and bot-parseable metadata.",
     "type": "library",
     "keywords": ["laravel", "discord", "notifications", "webhook", "embeds", "observability", "events", "logging"],
-    "homepage": "https://github.com/skaisser/howl",
+    "homepage": "https://howl.skaisser.dev",
     "support": {
         "issues": "https://github.com/skaisser/howl/issues",
         "source": "https://github.com/skaisser/howl"
