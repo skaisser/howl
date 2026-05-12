@@ -4,18 +4,18 @@
 
 v1.0.0 is the first stable public release of `skaisser/howl`. This version ships the complete multi-driver notification system with a production-ready API, full documentation, and a 100% line coverage test suite.
 
-The v1.0 release is the culmination of four focused plans (P-0005 → P-0008):
+The v1.0 release bundles four major capability tracks:
 
-- **P-0005** — driver-agnostic API, channel failover, rate-limit middleware
-- **P-0006** — Slack driver (Block Kit), Telegram driver (HTML + Forum topics)
-- **P-0007** — 100% line coverage gate, Pest 3/4 CI matrix, HowlFake per-driver assertions, architecture tests
-- **P-0008** — VitePress documentation site, llms.txt, README rewrite, this release
+- Driver-agnostic API, channel failover, rate-limit middleware
+- Slack driver (Block Kit), Telegram driver (HTML + Forum topics)
+- 100% line coverage gate, Pest 3/4 CI matrix, HowlFake per-driver assertions, architecture tests
+- VitePress documentation site, llms.txt, README rewrite, this release
 
 ---
 
 ## Driver-Agnostic API
 
-**[P-0005]** A single unified interface for all three notification drivers. Switch drivers per-call without changing application logic.
+A single unified interface for all three notification drivers. Switch drivers per-call without changing application logic.
 
 ```php
 // Direct severity verb — uses config('howl.driver') by default
@@ -40,7 +40,7 @@ See: [Quick Start](/next/guide/quick-start) · [Builder Methods](/next/extension
 
 ## Slack Driver
 
-**[P-0006]** Full Slack driver using Block Kit format and bot OAuth (`chat.postMessage`).
+Full Slack driver using Block Kit format and bot OAuth (`chat.postMessage`).
 
 - **Block Kit rendering** — rich message with color sidebar, section blocks, fields, context footer
 - **Channel routing** via `drivers.slack.channels` map (Howl channel name → Slack channel ID)
@@ -54,7 +54,7 @@ Setup: [Slack Driver](/next/drivers/slack)
 
 ## Telegram Driver
 
-**[P-0006]** Full Telegram driver using HTML parse mode and Forum topic routing.
+Full Telegram driver using HTML parse mode and Forum topic routing.
 
 - **HTML rendering** — bold/italic/code/pre formatting with monospace code blocks
 - **Forum topic routing** via `drivers.telegram.threads` map (Howl channel → topic ID)
@@ -68,7 +68,7 @@ Setup: [Telegram Driver](/next/drivers/telegram)
 
 ## Channel Failover and Fan-Out
 
-**[P-0005]** Two-channel dispatch modes configurable per application.
+Two-channel dispatch modes configurable per application.
 
 **Failover (default):** Dispatch to the primary channel; on failure, automatically retry on the backup channel.
 
@@ -90,7 +90,7 @@ See: [Failover & Fan-Out](/next/configuration/failover-and-fan-out)
 
 ## Rate Limiting
 
-**[P-0005]** Opt-in Redis-backed rate limiting on queued notification jobs.
+Opt-in Redis-backed rate limiting on queued notification jobs.
 
 ```env
 HOWL_RATE_LIMITER_KEY=howl-discord
@@ -107,7 +107,7 @@ Rate-limit releases do not consume retry attempts. See: [Rate Limiting](/next/co
 
 ## HowlFake Per-Driver Assertions
 
-**[P-0007]** Three new `HowlFake` assertions for driver-level testing:
+Three new `HowlFake` assertions for driver-level testing:
 
 ```php
 $fake->assertSentVia('slack', fn ($p) => $p->severity === 'info');
@@ -121,7 +121,7 @@ See: [HowlFake](/next/testing/howl-fake)
 
 ## Architecture Tests
 
-**[P-0007]** Pest `arch()` rules enforcing structural invariants:
+Pest `arch()` rules enforcing structural invariants:
 
 - All event classes extend `HowlEvent`
 - All driver classes implement the `Driver` contract
@@ -135,7 +135,7 @@ See: [Architecture Tests](/next/testing/architecture)
 
 ## Documentation Site
 
-**[P-0008]** Full VitePress documentation site at [howl.skaisser.dev](https://howl.skaisser.dev).
+Full VitePress documentation site at [howl.skaisser.dev](https://howl.skaisser.dev).
 
 - Laravel-docs-style sidebar with Upgrade Guide, Release Notes, and per-section deep pages
 - Versioned docs: `/next/` for pre-release authoring, `/v1.0.0/` for the frozen stable snapshot
@@ -145,7 +145,7 @@ See: [Architecture Tests](/next/testing/architecture)
 
 ## LLM-Friendly Docs
 
-**[P-0008]** `llms.txt` and `llms-full.txt` served from the repo root and the docs site for LLM tool discovery.
+`llms.txt` and `llms-full.txt` served from the repo root and the docs site for LLM tool discovery.
 
 ```bash
 curl https://howl.skaisser.dev/llms.txt

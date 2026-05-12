@@ -11,22 +11,22 @@ First stable public release. Multi-driver, queue-aware, with a full docs site at
 
 ### Added
 
-- **Driver-agnostic API**: `Howl::error/warning/info/audit/deployment/success(HowlEvent|string)` direct severity verbs; `Howl::on(?string)` channel builder; `Howl::driver(string)` per-call driver override (P-0005).
-- **Slack driver** (Block Kit format, bot OAuth + `chat.postMessage`, channel-ID routing, files.upload v2 attachments, mentions translation) (P-0006).
-- **Telegram driver** (HTML parse_mode, Forum topic routing via `message_thread_id`, sendDocument/sendPhoto attachments with extension auto-detection, user-mention translation) (P-0006).
-- **Cross-driver attachment parity** — `PendingNotification::attach($path)` now works on all 3 drivers (P-0006).
-- **Cross-driver mention translation** — abstract `mention()` intent translated to driver-specific syntax (P-0006).
-- **Channel-level failover and fan-out** — `channel_backup` + `channel_mode` config (P-0005).
-- **Opt-in queue rate-limit middleware** — `rate_limiter_key` config + `RateLimitedWithRedis` on `SendHowlJob` (P-0005).
-- **HowlFake per-driver assertions** — `assertSentVia()`, `assertSentViaNothing()`, `sentVia()` (P-0007).
-- **100% line coverage gate** + Pest 3/4 cross-version CI matrix (PHP 8.3/8.4 × Laravel 12/13 = 4 jobs) (P-0007).
-- **Architecture tests** via `Pest::arch()` enforcing event hierarchy, driver contract, no debug calls (P-0007).
-- **VitePress documentation site** at https://howl.skaisser.dev (P-0008).
-- **LLM-friendly docs** — `llms.txt` (index) + `llms-full.txt` (inlined) served from repo root and the docs site (P-0008).
+- **Driver-agnostic API**: `Howl::error/warning/info/audit/deployment/success(HowlEvent|string)` direct severity verbs; `Howl::on(?string)` channel builder; `Howl::driver(string)` per-call driver override.
+- **Slack driver** (Block Kit format, bot OAuth + `chat.postMessage`, channel-ID routing, files.upload v2 attachments, mentions translation).
+- **Telegram driver** (HTML parse_mode, Forum topic routing via `message_thread_id`, sendDocument/sendPhoto attachments with extension auto-detection, user-mention translation).
+- **Cross-driver attachment parity** — `PendingNotification::attach($path)` now works on all 3 drivers.
+- **Cross-driver mention translation** — abstract `mention()` intent translated to driver-specific syntax.
+- **Channel-level failover and fan-out** — `channel_backup` + `channel_mode` config.
+- **Opt-in queue rate-limit middleware** — `rate_limiter_key` config + `RateLimitedWithRedis` on `SendHowlJob`.
+- **HowlFake per-driver assertions** — `assertSentVia()`, `assertSentViaNothing()`, `sentVia()`.
+- **100% line coverage gate** + Pest 3/4 cross-version CI matrix (PHP 8.3/8.4 × Laravel 12/13 = 4 jobs).
+- **Architecture tests** via `Pest::arch()` enforcing event hierarchy, driver contract, no debug calls.
+- **VitePress documentation site** at https://howl.skaisser.dev.
+- **LLM-friendly docs** — `llms.txt` (index) + `llms-full.txt` (inlined) served from repo root and the docs site.
 
 ### Removed
 
-- `Howl::onDiscord()`, `Howl::onSlack()`, `Howl::onTelegram()` facade methods — replaced by `Howl::on(?string)` + `Howl::driver(string)` + direct severity verbs. See the [migration guide](https://howl.skaisser.dev/v1.0.0/upgrade) for the sed codemod (P-0005).
+- `Howl::onDiscord()`, `Howl::onSlack()`, `Howl::onTelegram()` facade methods — replaced by `Howl::on(?string)` + `Howl::driver(string)` + direct severity verbs. See the [migration guide](https://howl.skaisser.dev/v1.0.0/upgrade) for the sed codemod.
 
 ### Documentation
 
