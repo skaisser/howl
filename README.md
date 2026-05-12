@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🐺 Howl
+<img src="docs/public/logo-howl.svg" alt="Howl — Multi-driver Laravel notifier" width="420">
 
 **Multi-driver Laravel notifier — Discord, Slack, and Telegram with rich embeds.**
 
