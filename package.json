@@ -1,0 +1,25 @@
+{
+  "name": "howl",
+  "version": "1.0.0",
+  "description": "Multi-driver Laravel notifier (Discord, Slack, Telegram) with rich embeds, channel failover, and queue-aware dispatch.",
+  "type": "module",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "docs:build:llms": "node docs/.vitepress/scripts/build-llms-full.mjs"
+  },
+  "keywords": [
+    "laravel",
+    "notifications",
+    "discord",
+    "slack",
+    "telegram"
+  ],
+  "author": "Shirleyson Kaisser <skaisser@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "vitepress": "^1.6.4",
+    "vue": "^3.5.34"
+  }
+}
