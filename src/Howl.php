@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Log;
 use Skaisser\Howl\Contracts\Driver;
 use Skaisser\Howl\Drivers\DiscordDriver;
 use Skaisser\Howl\Drivers\NullDriver;
+use Skaisser\Howl\Drivers\SlackDriver;
+use Skaisser\Howl\Drivers\TelegramDriver;
 use Skaisser\Howl\Events\HowlEvent;
 use Skaisser\Howl\Jobs\SendHowlJob;
 use Skaisser\Howl\Support\Payload;
@@ -217,6 +219,8 @@ class Howl
     {
         return match ($name) {
             'discord' => new DiscordDriver,
+            'slack' => new SlackDriver,
+            'telegram' => new TelegramDriver,
             'null' => new NullDriver,
             default => throw new \InvalidArgumentException("Howl: unknown driver '{$name}'."),
         };
