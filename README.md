@@ -60,7 +60,7 @@ A single driver-agnostic API for Discord, Slack, and Telegram. Drop it into any 
 | 8.4 | 12.x | 3.x | 11.x | 10.x | ✅ |
 | 8.4 | 13.x | 4.x | 12.x | 11.x | ✅ |
 
-Every commit runs the full suite against all four combinations in CI.
+Composer constraints support all four combinations. CI validates the latest combo (PHP 8.4 × Laravel 13) on every commit; the other rows are validated locally before each release.
 
 ---
 
