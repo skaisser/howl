@@ -15,6 +15,9 @@ class HowlFake extends Howl
     /** @var array<string, Payload[]> Payloads indexed by channel name. */
     protected array $sent = [];
 
+    /** @var array<string, Payload[]> Payloads indexed by driver name. */
+    protected array $sentByDriver = [];
+
     /**
      * Capture the payload instead of dispatching to the real driver.
      * Intentionally skips the skip_environments check so tests can always
@@ -23,7 +26,10 @@ class HowlFake extends Howl
     public function dispatch(Payload $payload): bool
     {
         $channel = $payload->channel ?? 'default';
+        $driver = $payload->driver ?? $this->config['driver'] ?? 'discord';
+
         $this->sent[$channel][] = $payload;
+        $this->sentByDriver[$driver][] = $payload;
 
         return true;
     }
@@ -93,6 +99,46 @@ class HowlFake extends Howl
             $total,
             "Expected no payloads to be sent, but {$total} payload(s) were captured."
         );
+    }
+
+    /**
+     * Assert that at least one payload dispatched via the given driver
+     * satisfies the callback.
+     *
+     * @param  callable(Payload): bool  $callback
+     */
+    public function assertSentVia(string $driver, callable $callback): void
+    {
+        $payloads = $this->sentByDriver[$driver] ?? [];
+
+        Assert::assertTrue(
+            collect($payloads)->contains($callback),
+            "No payload matched the callback on driver '{$driver}'. Sent ".count($payloads)." payload(s) via that driver."
+        );
+    }
+
+    /**
+     * Assert that no payloads have been dispatched via the given driver.
+     */
+    public function assertSentViaNothing(string $driver): void
+    {
+        $count = count($this->sentByDriver[$driver] ?? []);
+
+        Assert::assertSame(
+            0,
+            $count,
+            "Expected no payloads via driver '{$driver}', but {$count} payload(s) were captured."
+        );
+    }
+
+    /**
+     * Return captured payloads routed via the given driver.
+     *
+     * @return Payload[]
+     */
+    public function sentVia(string $driver): array
+    {
+        return $this->sentByDriver[$driver] ?? [];
     }
 
     /**
