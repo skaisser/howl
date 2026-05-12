@@ -57,7 +57,7 @@ dataset('generic_events', [
 // ---------------------------------------------------------------------------
 // End-to-end dispatch test (1 test × 7 dataset entries = 7 cases)
 //
-// Flow: Howl::onDiscord()->{verb}($event)
+// Flow: Howl::on()->{verb}($event)
 //   → terminal method detects HowlEvent → delegates to ->send()
 //   → buildPayload() calls $event->toPayload() for base fields
 //   → HowlFake captures the resulting Payload
@@ -72,7 +72,7 @@ it('dispatches generic event end-to-end: captured payload matches event->toPaylo
     $fake = Howl::fake();
     $event = $factory();
 
-    Howl::onDiscord()->{$verb}($event);
+    Howl::on()->{$verb}($event);
 
     $captured = $fake->sent()[0];
     $expected = $event->toPayload();

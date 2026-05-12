@@ -5,9 +5,14 @@ namespace Skaisser\Howl\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static \Skaisser\Howl\Support\PendingNotification onDiscord(?string $channel = null)
- * @method static \Skaisser\Howl\Support\PendingNotification onSlack(?string $channel = null)
- * @method static \Skaisser\Howl\Support\PendingNotification onTelegram(?string $channel = null)
+ * @method static \Skaisser\Howl\Support\PendingNotification on(?string $channel = null)
+ * @method static \Skaisser\Howl\Support\PendingNotification driver(string $name)
+ * @method static bool error(\Skaisser\Howl\Events\HowlEvent|string $titleOrEvent = '')
+ * @method static bool warning(\Skaisser\Howl\Events\HowlEvent|string $titleOrEvent = '')
+ * @method static bool info(\Skaisser\Howl\Events\HowlEvent|string $titleOrEvent = '')
+ * @method static bool audit(\Skaisser\Howl\Events\HowlEvent|string $titleOrEvent = '')
+ * @method static bool deployment(\Skaisser\Howl\Events\HowlEvent|string $titleOrEvent = '')
+ * @method static bool success(\Skaisser\Howl\Events\HowlEvent|string $titleOrEvent = '')
  * @method static \Skaisser\Howl\Testing\HowlFake fake()
  * @method static void assertSent(callable $callback)
  * @method static void assertSentOnChannel(string $channel, callable $callback)

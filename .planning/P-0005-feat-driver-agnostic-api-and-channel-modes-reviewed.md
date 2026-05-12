@@ -274,16 +274,22 @@ Hard-cut deletion. Mostly mechanical [H] but the test-file migrations (HowlFakeT
 
 ## Acceptance
 
-- [ ] `src/CLAUDE.md` exists and documents both the "code change requires docs update" rule AND the versioned-docs policy (`/docs/v{N.M}/`, `/docs/next/`, promotion-on-tag flow). This file becomes the governing policy for P-0006/P-0007/P-0008 and all post-v1.0 work.
-- [ ] Six severity methods (`Howl::error/warning/info/audit/deployment/success`) + `Howl::on(?string)` + `Howl::driver(string)` present on `Howl` class and documented in `src/Facades/Howl.php` `@method` PHPDoc.
-- [ ] Channel precedence enforced and asserted: per-call `Howl::on($c)` > `HowlEvent::channel()` > `config('howl.channel')`.
-- [ ] Backup channel + `channel_mode` (`failover` + `fan_out`) implemented; `Http::fake()` integration tests cover all six scenarios in Phase 3.
-- [ ] Per-call `Howl::driver($name)->...` overrides the configured driver on dispatch; singleton state unchanged.
-- [ ] `onDiscord/onSlack/onTelegram` methods GONE from `src/Howl.php` (no aliases, no `@deprecated`, no `trigger_error`). `grep -rn "onDiscord\|onSlack\|onTelegram" src/ tests/` returns empty.
-- [ ] All 38 legacy callsites in test files migrated to the new API; tests that asserted `onSlack/onTelegram throw BadMethodCallException` are deleted (assertion no longer applies).
-- [ ] `SendHowlJob::middleware()` returns `[RateLimitedWithRedis(key)]` when `config('howl.rate_limiter_key')` is non-null, else `[]`. Default null preserves today's no-throttle dispatch.
-- [ ] Stale comments fixed: `src/Support/PendingNotification.php:430` and `config/howl.php:9` no longer reference `Howl::onDiscord(...)`.
-- [ ] Full regression green: `vendor/bin/pest --parallel` exits 0; total test count baseline + ~25-30.
-- [ ] Old P-0004 file moved to `-cancelled.md` suffix with a top-of-file supersession note linking to this plan.
-- [ ] Handoff note at end of this plan flags that `Howl::driver('slack')` / `Howl::driver('telegram')` paths are wired but throw `InvalidArgumentException` until P-0006 registers the drivers.
-- [ ] NO release tag cut. NO CHANGELOG entry. NO composer.json version bump. All release artifacts deferred to P-0008.
+- [x] `src/CLAUDE.md` exists and documents both the "code change requires docs update" rule AND the versioned-docs policy (`/docs/v{N.M}/`, `/docs/next/`, promotion-on-tag flow). This file becomes the governing policy for P-0006/P-0007/P-0008 and all post-v1.0 work.
+- [x] Six severity methods (`Howl::error/warning/info/audit/deployment/success`) + `Howl::on(?string)` + `Howl::driver(string)` present on `Howl` class and documented in `src/Facades/Howl.php` `@method` PHPDoc.
+- [x] Channel precedence enforced and asserted: per-call `Howl::on($c)` > `HowlEvent::channel()` > `config('howl.channel')`.
+- [x] Backup channel + `channel_mode` (`failover` + `fan_out`) implemented; integration tests cover all six scenarios in Phase 3.
+- [x] Per-call `Howl::driver($name)->...` overrides the configured driver on dispatch; singleton state unchanged.
+- [x] `onDiscord/onSlack/onTelegram` methods GONE from `src/Howl.php` (no aliases, no `@deprecated`, no `trigger_error`). `grep -rn "onDiscord\|onSlack\|onTelegram" src/ tests/` returns empty.
+- [x] All 38 legacy callsites in test files migrated to the new API; tests that asserted `onSlack/onTelegram throw BadMethodCallException` are deleted (assertion no longer applies).
+- [x] `SendHowlJob::middleware()` returns `[RateLimitedWithRedis(key)]` when `config('howl.rate_limiter_key')` is non-null, else `[]`. Default null preserves today's no-throttle dispatch.
+- [x] Stale comments fixed: `src/Support/PendingNotification.php:430` and `config/howl.php:9` no longer reference `Howl::onDiscord(...)`.
+- [x] Full regression green: `vendor/bin/pest --parallel` exits 0; total test count 346 / 751 assertions (baseline 322 / 692 + 24 net new tests).
+- [x] Old P-0004 file moved to `-cancelled.md` suffix with a top-of-file supersession note linking to this plan.
+- [x] Handoff note at end of this plan flags that `Howl::driver('slack')` / `Howl::driver('telegram')` paths are wired but throw `InvalidArgumentException` until P-0006 registers the drivers.
+- [x] NO release tag cut. NO CHANGELOG entry. NO composer.json version bump. All release artifacts deferred to P-0008.
+
+## Handoff to P-0006
+
+API surface is now driver-agnostic. `Howl::driver('slack')` and `Howl::driver('telegram')` flow through the new dispatch path correctly but throw `InvalidArgumentException("Howl: unknown driver 'slack'.")` until P-0006 registers the drivers in `resolveDriver()`.
+
+`src/CLAUDE.md` now governs API-change → docs-update discipline AND versioned docs policy for all subsequent plans. P-0008 must implement the VitePress versioning infrastructure to honor this rule.

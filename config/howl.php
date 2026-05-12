@@ -6,9 +6,9 @@ return [
     |-------------------------------------------------------------------------
     | Default driver
     |-------------------------------------------------------------------------
-    | Which driver receives Howl::onDiscord()->error(...) by default.
+    | Which driver Howl::error(...) / Howl::on()->error(...) uses by default.
     | In v1 only `discord` is implemented. `telegram` / `slack` are
-    | reserved for future versions.
+    | reserved for P-0006.
     */
     'driver' => env('HOWL_DRIVER', 'discord'),
 
@@ -23,6 +23,42 @@ return [
 
     /*
     |-------------------------------------------------------------------------
+    | Default channel
+    |-------------------------------------------------------------------------
+    | The channel (Discord thread / category name) used when no channel is
+    | set per-call via Howl::on($channel) or via HowlEvent::channel().
+    | Channel precedence: per-call > HowlEvent::channel() > this config key.
+    */
+    'channel' => env('HOWL_DEFAULT_CHANNEL', 'errors'),
+
+    /*
+    |-------------------------------------------------------------------------
+    | Backup channel
+    |-------------------------------------------------------------------------
+    | Optional second channel used for failover or fan-out. Set to null to
+    | disable backup-channel behaviour (single-channel dispatch only).
+    */
+    'channel_backup' => env('HOWL_BACKUP_CHANNEL', null),
+
+    /*
+    |-------------------------------------------------------------------------
+    | Channel mode
+    |-------------------------------------------------------------------------
+    | Controls how the primary + backup channels are used when channel_backup
+    | is non-null:
+    |
+    |   'failover' (default) — try primary; on failure, try backup once.
+    |                          Returns true on first success, false if both fail.
+    |
+    |   'fan_out'            — dispatch to BOTH channels sequentially.
+    |                          Returns true iff at least one channel succeeds.
+    |                          Note: fan_out doubles your rate-limit consumption —
+    |                          size your RateLimiter::for() quota accordingly.
+    */
+    'channel_mode' => env('HOWL_CHANNEL_MODE', 'failover'),
+
+    /*
+    |-------------------------------------------------------------------------
     | Queue mode
     |-------------------------------------------------------------------------
     | When true, sends are dispatched as ShouldQueue jobs with 3 retries
@@ -32,6 +68,21 @@ return [
     'queue' => env('HOWL_QUEUE', false),
     'queue_connection' => env('HOWL_QUEUE_CONNECTION', null),
     'queue_name' => env('HOWL_QUEUE_NAME', 'default'),
+
+    /*
+    |-------------------------------------------------------------------------
+    | Queue rate-limiter (opt-in)
+    |-------------------------------------------------------------------------
+    | When non-null, SendHowlJob::middleware() wraps each job with
+    | RateLimitedWithRedis using this key. Register the limiter in your
+    | AppServiceProvider::boot():
+    |
+    |   RateLimiter::for('howl-discord', fn () => Limit::perMinute(28));
+    |
+    | When null (default), no rate-limiting is applied.
+    | Requires Redis at runtime (not needed for unit tests).
+    */
+    'rate_limiter_key' => env('HOWL_RATE_LIMITER_KEY', null),
 
     /*
     |-------------------------------------------------------------------------
@@ -83,7 +134,7 @@ return [
             'avatar_url' => env('HOWL_DISCORD_AVATAR_URL'),
         ],
 
-        // Future drivers (v2+) — reserved scaffolding
+        // Future drivers (P-0006) — reserved scaffolding
         'telegram' => [
             'bot_token' => env('HOWL_TELEGRAM_BOT_TOKEN'),
             'chat_id' => env('HOWL_TELEGRAM_CHAT_ID'),
